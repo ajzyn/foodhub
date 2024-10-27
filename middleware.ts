@@ -1,44 +1,40 @@
-import { auth } from '@/auth'
 import { NextResponse } from 'next/server'
+import { auth } from './auth'
 
 const publicRoutes = ['/', '/auth/sign-in', '/auth/sign-up']
 
+const allowedSubdomains = ['restaurant', 'supplier']
+
 const isPublicRoute = (request: Request) => {
   const url = new URL(request.url)
-  return publicRoutes.some((route) => {
-    if (route.endsWith('(.*)')) {
-      return url.pathname.startsWith(route.slice(0, -4))
-    }
-    return url.pathname === route
-  })
+
+  return publicRoutes.some((route) => url.pathname === route)
 }
 
-export default auth((request: any) => {
-  if (!isPublicRoute(request)) {
-    const url = request.nextUrl
+export default auth((request) => {
+  if (isPublicRoute(request)) {
+    const url = new URL(request.url)
     const searchParams = url.searchParams.toString()
     const hostname = request.headers.get('host')
 
     const pathWithSearchParams = url.pathname + (searchParams ? '?' + searchParams : '')
 
-    const customSubdomain = hostname?.split(`${process.env.NEXT_PUBLIC_DOMAIN}`).filter(Boolean)[0]
+    const customSubdomain = hostname
+      ?.split(`${process.env.NEXT_PUBLIC_DOMAIN}`)
+      .filter(Boolean)[0]
+      ?.toLowerCase()
+      .slice(0, -1) as string
 
-    if (customSubdomain) {
+    if (customSubdomain && allowedSubdomains.includes(customSubdomain)) {
       return NextResponse.rewrite(new URL(`/${customSubdomain}${pathWithSearchParams}`, request.url))
-    }
-
-    if (url.pathname === '/sign-in' || url.pathname === '/sign-up') {
-      return NextResponse.redirect(new URL(`/agency/sign-in`, request.url))
     }
 
     if (url.pathname === '/' || (url.pathname === '/site' && url.host === process.env.NEXT_PUBLIC_DOMAIN)) {
       return NextResponse.redirect(new URL('/site', request.url))
     }
-
-    if (url.pathname.startsWith('/agency') || url.pathname.startsWith('/subaccount')) {
-      return NextResponse.rewrite(new URL(`${pathWithSearchParams}`, request.url))
-    }
   }
+
+  return NextResponse.next()
 })
 
 export const config = {
