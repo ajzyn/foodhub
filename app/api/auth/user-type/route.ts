@@ -1,15 +1,23 @@
+import getSession from '@/lib/getSession'
 import { setUserType } from '@/server/db/user'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
-  const { userId, userType } = await request.json()
+  const session = await getSession()
+  const userId = session?.user?.id
 
-  if (!userId || !userType) {
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const body = await request.json()
+
+  if (!body.userType) {
     return NextResponse.json({ error: 'Missing userId or userType' }, { status: 400 })
   }
 
   try {
-    await setUserType(userId, userType)
+    await setUserType(userId, body.userType)
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error setting user type:', error)

@@ -1,26 +1,12 @@
 'use client'
 
-import { signIn } from 'next-auth/react'
-import { useState } from 'react'
+import SignUpForm from '@/components/auth/sign-up-form'
+import { UserType } from '@prisma/client'
+import { useSearchParams } from 'next/navigation'
 
-export default function RegisterPage() {
-  const [userType, setUserType] = useState<'restaurant' | 'supplier'>('restaurant')
+export default function SignUpTypePage() {
+  const searchParams = useSearchParams()
+  const type = searchParams.get('type') as UserType
 
-  const handleSignIn = async () => {
-    await signIn('google', {
-      callbackUrl: `/auth/complete-registration?userType=${userType}`,
-      redirect: true
-    })
-  }
-
-  return (
-    <div>
-      <h1>Zarejestruj się</h1>
-      <select value={userType} onChange={(e) => setUserType(e.target.value as 'restaurant' | 'supplier')}>
-        <option value="restaurant">Restauracja</option>
-        <option value="supplier">Dostawca</option>
-      </select>
-      <button onClick={handleSignIn}>Zaloguj się przez Google</button>
-    </div>
-  )
+  return <SignUpForm type={type} />
 }

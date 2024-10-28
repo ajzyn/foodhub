@@ -12,20 +12,21 @@ const isPublicRoute = (request: Request) => {
 }
 
 export default auth((request) => {
-  if (isPublicRoute(request)) {
+  const hostname = request.headers.get('host')
+  const customSubdomain = hostname
+    ?.split(`${process.env.NEXT_PUBLIC_DOMAIN}`)
+    .filter(Boolean)[0]
+    ?.toLowerCase()
+    .slice(0, -1) as string
+  const isDomainAllowed = allowedSubdomains.includes(customSubdomain)
+
+  if (!isPublicRoute(request) || isDomainAllowed) {
     const url = new URL(request.url)
     const searchParams = url.searchParams.toString()
-    const hostname = request.headers.get('host')
 
     const pathWithSearchParams = url.pathname + (searchParams ? '?' + searchParams : '')
 
-    const customSubdomain = hostname
-      ?.split(`${process.env.NEXT_PUBLIC_DOMAIN}`)
-      .filter(Boolean)[0]
-      ?.toLowerCase()
-      .slice(0, -1) as string
-
-    if (customSubdomain && allowedSubdomains.includes(customSubdomain)) {
+    if (customSubdomain) {
       return NextResponse.rewrite(new URL(`/${customSubdomain}${pathWithSearchParams}`, request.url))
     }
 
