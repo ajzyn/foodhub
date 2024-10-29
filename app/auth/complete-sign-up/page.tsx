@@ -2,6 +2,7 @@
 
 import { UserType } from '@prisma/client'
 import { useSession } from 'next-auth/react'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -25,9 +26,10 @@ export default function CompleteRegistration() {
 
         if (response.ok) {
           await update({ type: userType })
-          window.location.href = `${process.env.NEXT_PUBLIC_SCHEME}${userType.toLocaleLowerCase()}.${
-            process.env.NEXT_PUBLIC_DOMAIN
-          }`
+          // window.location.href = `${process.env.NEXT_PUBLIC_SCHEME}${userType.toLocaleLowerCase()}.${
+          //   process.env.NEXT_PUBLIC_DOMAIN
+          // }`
+          setIsLoading(false)
         }
       }
     }
@@ -41,5 +43,12 @@ export default function CompleteRegistration() {
     return <div>Nieprawidłowy typ użytkownika</div>
   }
 
-  return <div>Kończenie rejestracji...</div>
+  return (
+    <>
+      <Link href={`${process.env.NEXT_PUBLIC_SCHEME}${userType.toLocaleLowerCase()}.${process.env.NEXT_PUBLIC_DOMAIN}`}>
+        <button>Przejdź do strony</button>
+      </Link>
+      <div>Kończenie rejestracji...</div>
+    </>
+  )
 }
