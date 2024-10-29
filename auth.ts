@@ -10,7 +10,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     sessionToken: {
       name: `next-auth.session-token`,
       options: {
-        domain: '.lvh.me',
+        domain: '.a96f-80-94-17-242.ngrok-free.app ',
         path: '/',
         secure: false // Ustaw na true w środowisku produkcyjnym z HTTPS
       }
