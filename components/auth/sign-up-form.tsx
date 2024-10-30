@@ -1,4 +1,3 @@
-import { UserType } from '@prisma/client'
 import { Button } from '../ui/button'
 import { handleGithubSignIn, handleGoogleSignIn } from '@/server/actions/auth'
 
