@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { auth } from './auth'
 
+const allowedSubdomains = ['restaurant', 'supplier']
+
 export default auth((request) => {
   const hostname = request.headers.get('host')
   const domain = process.env.NEXT_PUBLIC_DOMAIN
@@ -16,13 +18,12 @@ export default auth((request) => {
 
   const pathWithSearchParams = url.pathname + (searchParams ? `?${searchParams}` : '')
 
-  if (customSubdomain && !url.pathname.startsWith(`/${customSubdomain}`)) {
-    const segments = url.pathname.split('/').filter(Boolean)
-
-    if (!segments.length || segments[0] !== customSubdomain) {
-      // Tylko wtedy dodaj prefix subdomeny
-      return NextResponse.rewrite(new URL(`/${customSubdomain}${pathWithSearchParams}`, request.url))
-    }
+  if (
+    customSubdomain &&
+    allowedSubdomains.includes(customSubdomain) &&
+    !url.pathname.startsWith(`/${customSubdomain}`)
+  ) {
+    return NextResponse.rewrite(new URL(`/${customSubdomain}${pathWithSearchParams}`, request.url))
   }
 
   if (url.pathname === '/') {
