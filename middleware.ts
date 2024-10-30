@@ -4,31 +4,25 @@ import { auth } from './auth'
 const allowedSubdomains = ['restaurant', 'supplier']
 
 export default auth((request) => {
-  // if (process.env.NODE_ENV === 'development') {
-  //   const url = new URL(request.url)
-
-  //   if (url.pathname === '/' || (url.pathname === '/site' && url.host === process.env.NEXT_PUBLIC_DOMAIN)) {
-  //     return NextResponse.rewrite(new URL('/site', request.url))
-  //   }
-
-  //   return NextResponse.next()
-  // }
-
   const hostname = request.headers.get('host')
-  const customSubdomain = hostname
-    ?.split(`${process.env.NEXT_PUBLIC_DOMAIN}`)
-    .filter(Boolean)[0]
-    ?.toLowerCase()
-    .slice(0, -1) as string
+  const domain = process.env.NEXT_PUBLIC_DOMAIN
 
+  if (!domain) {
+    console.error('NEXT_PUBLIC_DOMAIN is not defined')
+    return NextResponse.next()
+  }
+
+  const customSubdomain = hostname?.split(`.${domain}`)[0]?.toLowerCase()
   const url = new URL(request.url)
   const searchParams = url.searchParams.toString()
 
-  const pathWithSearchParams = url.pathname + (searchParams ? '?' + searchParams : '')
+  const pathWithSearchParams = url.pathname + (searchParams ? `?${searchParams}` : '')
 
-  const isDomainAllowed = allowedSubdomains.includes(customSubdomain)
-
-  if (customSubdomain && isDomainAllowed) {
+  if (
+    customSubdomain &&
+    allowedSubdomains.includes(customSubdomain) &&
+    !url.pathname.startsWith(`/${customSubdomain}`)
+  ) {
     return NextResponse.rewrite(new URL(`/${customSubdomain}${pathWithSearchParams}`, request.url))
   }
 
@@ -41,9 +35,9 @@ export default auth((request) => {
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
+    // Wyklucz Next.js internals, statyczne pliki, oraz już przekierowane subdomeny
+    '/((?!_next|api|trpc|supplier|restaurant|site|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Zawsze uruchamiaj dla innych API routes
     '/(api|trpc)(.*)'
   ]
 }
