@@ -1,26 +1,18 @@
 import { NextResponse } from 'next/server'
 import { auth } from './auth'
 
-const publicRoutes = ['/', '/auth/sign-in', '/auth/sign-up']
-
 const allowedSubdomains = ['restaurant', 'supplier']
 
-const isPublicRoute = (request: Request) => {
-  const url = new URL(request.url)
-
-  return publicRoutes.some((route) => url.pathname === route)
-}
-
 export default auth((request) => {
-  if (process.env.NODE_ENV === 'development') {
-    const url = new URL(request.url)
+  // if (process.env.NODE_ENV === 'development') {
+  //   const url = new URL(request.url)
 
-    if (url.pathname === '/' || (url.pathname === '/site' && url.host === process.env.NEXT_PUBLIC_DOMAIN)) {
-      return NextResponse.rewrite(new URL('/site', request.url))
-    }
+  //   if (url.pathname === '/' || (url.pathname === '/site' && url.host === process.env.NEXT_PUBLIC_DOMAIN)) {
+  //     return NextResponse.rewrite(new URL('/site', request.url))
+  //   }
 
-    return NextResponse.next()
-  }
+  //   return NextResponse.next()
+  // }
 
   const hostname = request.headers.get('host')
   const customSubdomain = hostname
@@ -29,21 +21,19 @@ export default auth((request) => {
     ?.toLowerCase()
     .slice(0, -1) as string
 
+  const url = new URL(request.url)
+  const searchParams = url.searchParams.toString()
+
+  const pathWithSearchParams = url.pathname + (searchParams ? '?' + searchParams : '')
+
   const isDomainAllowed = allowedSubdomains.includes(customSubdomain)
 
-  if (!isPublicRoute(request) || isDomainAllowed) {
-    const url = new URL(request.url)
-    const searchParams = url.searchParams.toString()
+  if (customSubdomain && isDomainAllowed) {
+    return NextResponse.rewrite(new URL(`/${customSubdomain}${pathWithSearchParams}`, request.url))
+  }
 
-    const pathWithSearchParams = url.pathname + (searchParams ? '?' + searchParams : '')
-
-    if (customSubdomain) {
-      return NextResponse.rewrite(new URL(`/${customSubdomain}${pathWithSearchParams}`, request.url))
-    }
-
-    if (url.pathname === '/' || (url.pathname === '/site' && url.host === process.env.NEXT_PUBLIC_DOMAIN)) {
-      return NextResponse.redirect(new URL('/site', request.url))
-    }
+  if (url.pathname === '/') {
+    return NextResponse.rewrite(new URL('/site', request.url))
   }
 
   return NextResponse.next()
