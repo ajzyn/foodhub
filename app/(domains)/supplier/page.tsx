@@ -1,8 +1,10 @@
-import getSession from '@/lib/getSession'
+'use client'
 
-export default async function SupplierPage() {
-  const session = await getSession()
-  console.log(session?.user)
+import { useSession } from 'next-auth/react'
+
+export default function SupplierPage() {
+  const { data: session } = useSession()
+  console.log(session)
 
   return <div>SupplierPage</div>
 }
