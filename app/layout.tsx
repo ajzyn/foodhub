@@ -1,8 +1,6 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
-import Header from '@/components/header'
-import Footer from '@/components/footer'
 import CombinedProviders from '@/components/providers/combined-providers'
 
 const geistSans = localFont({
@@ -30,11 +28,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <div className="flex flex-col min-h-screen">
-          <CombinedProviders>
-            <Header />
-            <main className="flex-grow mt-10">{children}</main>
-            <Footer />
-          </CombinedProviders>
+          <CombinedProviders>{children}</CombinedProviders>
         </div>
       </body>
     </html>

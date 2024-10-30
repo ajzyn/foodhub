@@ -13,6 +13,12 @@ const isPublicRoute = (request: Request) => {
 
 export default auth((request) => {
   if (process.env.NODE_ENV === 'development') {
+    const url = new URL(request.url)
+
+    if (url.pathname === '/' || (url.pathname === '/site' && url.host === process.env.NEXT_PUBLIC_DOMAIN)) {
+      return NextResponse.rewrite(new URL('/site', request.url))
+    }
+
     return NextResponse.next()
   }
 
