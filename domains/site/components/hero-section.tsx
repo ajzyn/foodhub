@@ -28,7 +28,11 @@ export default function HeroSection() {
                 <Utensils className="ml-1" />
               </Button>
             </Link>
-            <Link href={`supplier.${process.env.NEXT_PUBLIC_APP_URL}`}>
+            <Link
+              href={`${process.env.NEXT_PUBLIC_SCHEME}supplier.${process.env.NEXT_PUBLIC_DOMAIN}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Button size="lg" variant="default">
                 Zarejestruj się jako Dostawca
                 <Car className="ml-1" />
