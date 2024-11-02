@@ -32,9 +32,6 @@ export default auth((request) => {
 
 export const config = {
   matcher: [
-    // Wyklucz Next.js internals, statyczne pliki, oraz już przekierowane subdomeny
-    '/((?!_next|api|trpc|supplier|restaurant|site|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Zawsze uruchamiaj dla innych API routes
-    '/(api|trpc)(.*)'
+    '/((?!_next|api|trpc|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)'
   ]
 }
