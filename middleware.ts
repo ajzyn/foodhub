@@ -13,17 +13,14 @@ export default auth((request) => {
   }
 
   const customSubdomain = hostname?.split(`.${domain}`)[0]?.toLowerCase()
-  const url = new URL(request.url)
+  const url = request.nextUrl.clone()
   const searchParams = url.searchParams.toString()
 
   const pathWithSearchParams = url.pathname + (searchParams ? `?${searchParams}` : '')
 
-  if (
-    customSubdomain &&
-    allowedSubdomains.includes(customSubdomain) &&
-    !url.pathname.startsWith(`/${customSubdomain}`)
-  ) {
-    return NextResponse.rewrite(new URL(`/${customSubdomain}${pathWithSearchParams}`, request.url))
+  if (customSubdomain && allowedSubdomains.includes(customSubdomain)) {
+    url.pathname = `/${customSubdomain}${pathWithSearchParams}`
+    return NextResponse.rewrite(url)
   }
 
   if (url.pathname === '/') {
