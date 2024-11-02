@@ -3,9 +3,8 @@ import { setUserType } from '@/server/db/user'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
-  const session = await getSession()
-  const userId = session?.user?.id
-
+  // const session = await getSession()
+  const userId = '123'
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }

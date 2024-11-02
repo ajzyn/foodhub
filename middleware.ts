@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server'
 import { auth } from './auth'
 
-const allowedSubdomains = ['restaurant', 'supplier']
-
 export default auth((request) => {
   const hostname = request.headers.get('host')
   const domain = process.env.NEXT_PUBLIC_DOMAIN
@@ -18,7 +16,15 @@ export default auth((request) => {
 
   const pathWithSearchParams = url.pathname + (searchParams ? `?${searchParams}` : '')
 
-  if (customSubdomain && allowedSubdomains.includes(customSubdomain)) {
+  if (customSubdomain) {
+    if (pathWithSearchParams.startsWith(`/${customSubdomain}`)) {
+      const purePath = pathWithSearchParams.split(`/${customSubdomain}`)[1]
+
+      url.pathname = `/${purePath}`
+
+      return NextResponse.redirect(url)
+    }
+
     url.pathname = `/${customSubdomain}${pathWithSearchParams}`
     return NextResponse.rewrite(url)
   }
@@ -33,6 +39,6 @@ export default auth((request) => {
 
 export const config = {
   matcher: [
-    '/((?!_next|api|trpc|supplier|restaurant|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)'
+    '/((?!_next|api/auth|api|trpc|.*\\.(?:html?|css|js|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)'
   ]
 }

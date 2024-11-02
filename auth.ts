@@ -18,6 +18,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }
   },
   session: {
-    strategy: 'database'
-  }
+    strategy: 'database', // lub "jwt" w zależności od potrzeb
+    maxAge: 30 * 24 * 60 * 60 // 30 dni
+  },
+  debug: true
 })
