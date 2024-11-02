@@ -24,7 +24,8 @@ export default auth((request) => {
   }
 
   if (url.pathname === '/') {
-    return NextResponse.rewrite(new URL('/site', request.url))
+    url.pathname = '/site'
+    return NextResponse.rewrite(url)
   }
 
   return NextResponse.next()
