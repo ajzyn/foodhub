@@ -14,26 +14,22 @@ export default function CompleteRegistration() {
 
   useEffect(() => {
     const completeRegistration = async () => {
-      if (session?.user && userType && !isLoading) {
-        setIsLoading(true)
+      setIsLoading(true)
 
-        const response = await fetch('/api/auth/user-type', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userType })
-        })
+      const response = await fetch('/api/auth/user-type', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userType })
+      })
 
-        if (response.ok) {
-          window.location.href = `${process.env.NEXT_PUBLIC_SCHEME}${userType.toLocaleLowerCase()}.${
-            process.env.NEXT_PUBLIC_DOMAIN
-          }`
-        }
+      if (response.ok) {
+        window.location.href = `${process.env.NEXT_PUBLIC_SCHEME}${userType.toLocaleLowerCase()}.${
+          process.env.NEXT_PUBLIC_DOMAIN
+        }`
       }
     }
 
-    console.log('before validation')
-    if (isUserTypeValid) {
-      console.log('inside')
+    if (isUserTypeValid && session?.user && !isLoading) {
       completeRegistration()
     }
   }, [session, userType, isUserTypeValid, isLoading])

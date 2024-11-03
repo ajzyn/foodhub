@@ -19,6 +19,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
     }
   },
+  callbacks: {
+    async session({ session, user }) {
+      session.user = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        type: user.type
+      }
+      return session
+    }
+  },
   session: {
     strategy: 'database',
     maxAge: 30 * 24 * 60 * 60
