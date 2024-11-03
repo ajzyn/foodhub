@@ -1,9 +1,10 @@
+import getSession from '@/lib/getSession'
 import { setUserType } from '@/server/db/user'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
-  // const session = await getSession()
-  const userId = '123'
+  const session = await getSession()
+  const userId = session?.user?.id
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }

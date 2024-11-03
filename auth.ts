@@ -9,11 +9,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Google, Github],
   cookies: {
     sessionToken: {
-      name: `next-auth.session-token`,
+      name: `authjs.session-token`,
       options: {
-        domain: process.env.NEXT_PUBLIC_DOMAIN,
+        httpOnly: true,
+        sameSite: 'lax',
         path: '/',
-        secure: process.env.NEXTAUTH_URL?.includes('https')
+        secure: process.env.NEXTAUTH_URL?.includes('https'),
+        domain: process.env.NODE_ENV === 'production' ? `.${process.env.NEXT_PUBLIC_DOMAIN}` : '.myapp.local'
       }
     }
   },
