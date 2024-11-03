@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth } from './auth'
 
 export default auth((request) => {
+  console.log('000000000000000000000000000000000000000000000000')
   const hostname = request.headers.get('host')
   const domain = process.env.NEXT_PUBLIC_DOMAIN
 
@@ -16,6 +17,7 @@ export default auth((request) => {
 
   const pathWithSearchParams = url.pathname + (searchParams ? `?${searchParams}` : '')
 
+  console.log(customSubdomain, hostname)
   if (customSubdomain) {
     if (pathWithSearchParams.startsWith(`/${customSubdomain}`)) {
       const purePath = pathWithSearchParams.split(`/${customSubdomain}`)[1]
@@ -29,6 +31,7 @@ export default auth((request) => {
     return NextResponse.rewrite(url)
   }
 
+  console.log(url)
   if (url.pathname === '/') {
     url.pathname = '/site'
     return NextResponse.rewrite(url)
