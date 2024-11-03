@@ -1,17 +1,11 @@
-'use client'
+import { Suspense } from 'react'
+import SignUp from './sign-up'
+import { Loader2 } from 'lucide-react'
 
-import SignUpForm from '@/components/auth/sign-up-form'
-import { UserType } from '@prisma/client'
-import { notFound } from 'next/navigation'
-import { useSearchParams } from 'next/navigation'
-
-export default function SignUpTypePage() {
-  const searchParams = useSearchParams()
-  const userType = searchParams.get('userType') as UserType
-
-  if (!userType || !Object.values(UserType).includes(userType)) {
-    return notFound()
-  }
-
-  return <SignUpForm userType={userType} />
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={<Loader2 className="animate-spin" />}>
+      <SignUp />
+    </Suspense>
+  )
 }
