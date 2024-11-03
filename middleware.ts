@@ -17,8 +17,7 @@ export default auth((request) => {
 
   const pathWithSearchParams = url.pathname + (searchParams ? `?${searchParams}` : '')
 
-  console.log(customSubdomain, hostname)
-  if (customSubdomain) {
+  if (customSubdomain !== hostname) {
     if (pathWithSearchParams.startsWith(`/${customSubdomain}`)) {
       const purePath = pathWithSearchParams.split(`/${customSubdomain}`)[1]
 
