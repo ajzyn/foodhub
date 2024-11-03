@@ -1,4 +1,3 @@
-import getSession from '@/lib/getSession'
 import { setUserType } from '@/server/db/user'
 import { NextResponse } from 'next/server'
 
