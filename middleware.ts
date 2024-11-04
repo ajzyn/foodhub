@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
-// import { auth } from './auth'
+import { NextResponse } from 'next/server'
+import { auth } from './auth'
 
-export default function middleware(request: NextRequest) {
+export default auth((request) => {
   const hostname = request.headers.get('host')
   const domain = process.env.NEXT_PUBLIC_DOMAIN
 
@@ -42,7 +42,7 @@ export default function middleware(request: NextRequest) {
   // Continue with the original request if no conditions are met
   console.log('No rewrite or redirect needed, continuing with the original request')
   return NextResponse.next()
-}
+})
 
 // export default auth((request) => {
 //   const hostname = request.headers.get('host')
