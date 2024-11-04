@@ -9,7 +9,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Google, Github],
   cookies: {
     sessionToken: {
-      name: `__Secure-session-token`,
+      name: `session-token`,
       options: {
         httpOnly: true,
         sameSite: 'lax',
@@ -19,7 +19,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
     },
     csrfToken: {
-      name: `__Secure-csrf-token`,
+      name: `csrf-token`,
       options: {
         httpOnly: true,
         sameSite: 'lax',
@@ -29,7 +29,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
     },
     callbackUrl: {
-      name: `__Secure-callback-url`,
+      name: `callback-url`,
       options: {
         httpOnly: true,
         sameSite: 'lax',
