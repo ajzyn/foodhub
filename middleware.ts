@@ -8,11 +8,17 @@ export default function middleware(request: NextRequest) {
   // Clone the URL to manipulate the path
   const url = request.nextUrl.clone()
 
-  console.log('Incoming request for:', hostname)
+  console.log('Incoming request for:', hostname, 'Path:', url.pathname)
 
   // Check if the domain variable is set correctly
   if (!domain) {
     console.error('NEXT_PUBLIC_DOMAIN is not defined')
+    return NextResponse.next()
+  }
+
+  // Handle auth paths separately
+  if (url.pathname.startsWith('/auth/')) {
+    console.log('Auth path detected, bypassing rewrite:', url.pathname)
     return NextResponse.next()
   }
 
