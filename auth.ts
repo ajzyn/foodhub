@@ -9,7 +9,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Google, Github],
   cookies: {
     sessionToken: {
-      name: `session-token`,
+      name: `__Secure-session-token`,
       options: {
         httpOnly: true,
         sameSite: 'lax',
