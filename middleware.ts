@@ -1,35 +1,35 @@
 import { NextResponse } from 'next/server'
-import { auth } from './auth'
+import authMiddleware from './auth-middleware'
 
-export default auth((request) => {
+export default async function middleware(request) {
+  // Call auth middleware to handle authentication
+  const authResponse = await authMiddleware(request)
+  if (authResponse) {
+    return authResponse
+  }
+
   const hostname = request.headers.get('host')
   const domain = process.env.NEXT_PUBLIC_DOMAIN
-
-  // Clone the URL to manipulate the path
   const url = request.nextUrl.clone()
 
   console.log('Incoming request for:', hostname, 'Path:', url.pathname)
 
-  // Check if the domain variable is set correctly
   if (!domain) {
     console.error('NEXT_PUBLIC_DOMAIN is not defined')
     return NextResponse.next()
   }
 
-  // Handle auth paths separately
   if (url.pathname.startsWith('/auth/')) {
     console.log('Auth path detected, bypassing rewrite:', url.pathname)
     return NextResponse.next()
   }
 
-  // Redirect main domain to /site
   if (hostname === domain) {
     console.log('Redirecting main domain to /site')
     url.pathname = '/site'
     return NextResponse.rewrite(url)
   }
 
-  // Rewrite subdomain to specific path
   const subdomain = hostname?.split(`.${domain}`)[0]?.toLowerCase()
   console.log('Subdomain detected:', subdomain)
 
@@ -39,10 +39,9 @@ export default auth((request) => {
     return NextResponse.rewrite(url)
   }
 
-  // Continue with the original request if no conditions are met
   console.log('No rewrite or redirect needed, continuing with the original request')
   return NextResponse.next()
-})
+}
 
 // export default auth((request) => {
 //   const hostname = request.headers.get('host')
