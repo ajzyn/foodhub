@@ -14,28 +14,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NEXTAUTH_URL?.includes('https'),
-        domain: process.env.NODE_ENV === 'production' ? `.${process.env.NEXT_PUBLIC_DOMAIN}` : '.myapp.local'
-      }
-    },
-    csrfToken: {
-      name: `csrf-token`,
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NEXTAUTH_URL?.includes('https'),
-        ...(process.env.NODE_ENV !== 'production' ? { domain: '.myapp.local' } : {})
-      }
-    },
-    callbackUrl: {
-      name: `callback-url`,
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NEXTAUTH_URL?.includes('https'),
-        domain: process.env.NODE_ENV === 'production' ? `.${process.env.NEXT_PUBLIC_DOMAIN}` : '.myapp.local'
+        secure: process.env.NEXTAUTH_URL?.includes('https')
+        // domain: process.env.NODE_ENV === 'production' ? `.${process.env.NEXT_PUBLIC_DOMAIN}` : '.myapp.local'
       }
     }
   },
