@@ -25,7 +25,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         sameSite: 'lax',
         path: '/',
         secure: process.env.NEXTAUTH_URL?.includes('https'),
-        domain: process.env.NODE_ENV === 'production' ? `.${process.env.NEXT_PUBLIC_DOMAIN}` : '.myapp.local'
+        ...(process.env.NODE_ENV !== 'production' ? { domain: '.myapp.local' } : {})
       }
     },
     callbackUrl: {
@@ -53,5 +53,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: 'database',
     maxAge: 30 * 24 * 60 * 60
-  }
+  },
+  debug: true
 })
