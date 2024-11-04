@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import authMiddleware from './auth-middleware'
 
-export default async function middleware(request) {
+export default async function middleware(request: any) {
   // Call auth middleware to handle authentication
   const authResponse = await authMiddleware(request)
   if (authResponse) {

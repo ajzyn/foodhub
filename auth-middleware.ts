@@ -1,6 +1,6 @@
 import { auth } from './auth'
 
-export default async function authMiddleware(request) {
+export default async function authMiddleware(request: any) {
   try {
     return await auth(request)
   } catch (error) {
