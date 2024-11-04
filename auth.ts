@@ -33,6 +33,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: 'database',
     maxAge: 30 * 24 * 60 * 60
-  }
+  },
   debug: true
 })
