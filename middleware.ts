@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import getSession from './lib/getSession'
 import { auth } from './auth'
 
 export default async function middleware(request: NextRequest) {
