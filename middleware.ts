@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from './auth'
 
 export default async function middleware(request: NextRequest) {
   console.log(request.cookies.get('session-token')?.value)
-  const session = await auth()
-  console.log('pizda')
-  console.log(session)
   const hostname = request.headers.get('host')
   const domain = process.env.NEXT_PUBLIC_DOMAIN
 
