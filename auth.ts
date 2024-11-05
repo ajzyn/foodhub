@@ -12,12 +12,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       name: `session-token`,
       options: {
         httpOnly: true,
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        sameSite: 'lax',
         path: '/',
         secure: process.env.NEXTAUTH_URL?.includes('https'),
         domain: process.env.NODE_ENV === 'production' ? `.${process.env.NEXT_PUBLIC_DOMAIN}` : '.myapp.local'
       }
     }
+  },
+  session: {
+    updateAge: 15 * 60,
+    maxAge: 60 * 15,
+    strategy: 'database'
   },
   callbacks: {
     async session({ session, user }) {
@@ -29,10 +34,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       return session
     }
-  },
-  session: {
-    strategy: 'database',
-    maxAge: 30 * 24 * 60 * 60
-  },
-  debug: true
+  }
 })
