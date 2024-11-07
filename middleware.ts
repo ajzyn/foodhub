@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { getSession } from 'next-auth/react'
+// import { getSession } from 'next-auth/react'
 export default async function middleware(request: NextRequest) {
-  const session = await getSession()
-  console.log(session)
+  // const session = await getSession()
+  // console.log(session)
 
   const hostname = request.headers.get('host')
   const domain = process.env.NEXT_PUBLIC_DOMAIN
