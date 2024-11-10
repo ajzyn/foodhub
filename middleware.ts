@@ -14,21 +14,13 @@ export default async function middleware(request: NextRequest) {
   const searchParams = url.searchParams.toString()
   const pathWithSearchParams = url.pathname + (searchParams ? `?${searchParams}` : '')
 
-  // const authToken = request.cookies.get('session-token')
-  // const session = authToken?.value
-
-  console.log('1')
-  console.log(customSubdomain, hostname, url.pathname)
-  if (customSubdomain === hostname && pathWithSearchParams === '/') {
-    console.log('2')
+  if (customSubdomain && customSubdomain === hostname && pathWithSearchParams === '/') {
     url.pathname = '/site'
     return NextResponse.rewrite(url)
   }
 
-  if (customSubdomain === 'supplier') {
-    console.log('3')
+  if (customSubdomain) {
     if (pathWithSearchParams.startsWith(`/${customSubdomain}`)) {
-      console.log('4')
       const purePath = pathWithSearchParams.split(`/${customSubdomain}`)[1]
 
       url.pathname = `/${purePath}`
