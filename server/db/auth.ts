@@ -1,4 +1,3 @@
-import { auth } from '@/auth'
 import prisma from '@/lib/prisma'
 import { UserType } from '@prisma/client'
 import { NextResponse } from 'next/server'
@@ -11,11 +10,11 @@ export async function setUserType(userId: string, userType: UserType) {
 }
 
 export async function getUserBySessionToken() {
-  const session = await auth()
+  const session = await prisma.session.findFirst()
 
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  return session.user
+  return session
 }
