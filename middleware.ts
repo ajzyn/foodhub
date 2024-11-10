@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { routesConfig } from './lib/auht'
 
 export default async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host')
@@ -16,6 +17,16 @@ export default async function middleware(request: NextRequest) {
 
   if (customSubdomain !== hostname) {
     url.pathname = `/${customSubdomain}${pathWithSearchParams}`
+    const currentRouteConfig = routesConfig.find((route) => pathWithSearchParams.startsWith(route.matcher))
+
+    if (currentRouteConfig?.requiredAuth) {
+      console.log('--------------------')
+      console.log(url)
+      const session = request.cookies.get('session-token')
+      if (!session) {
+        return NextResponse.redirect(`/auth/sign-up?userType=${customSubdomain}`)
+      }
+    }
 
     return NextResponse.rewrite(url)
   }

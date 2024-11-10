@@ -5,6 +5,7 @@ model User {
   emailVerified DateTime?
   image         String?
   type          UserType?
+  permissions   Permission[]
   accounts      Account[]
   sessions      Session[]
 
@@ -59,5 +60,10 @@ model VerificationToken {
 enum UserType {
   SUPPLIER
   RESTAURANT
+}
+
+enum Permission {
+  ADMIN
+  USER
 }
 
