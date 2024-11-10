@@ -1,134 +1,47 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-// import { getSession } from 'next-auth/react'
-import { auth } from './auth'
-
-export default auth(async (request) => {
-  // const session = await getSession()
-  // console.log(session)
-
+export default async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host')
-  console.log(hostname)
   const domain = process.env.NEXT_PUBLIC_DOMAIN
-
-  // Clone the URL to manipulate the path
   const url = request.nextUrl.clone()
 
-  console.log('Incoming request for:', hostname, 'Path:', url.pathname)
-
-  // Check if the domain variable is set correctly
   if (!domain) {
     console.error('NEXT_PUBLIC_DOMAIN is not defined')
     return NextResponse.next()
   }
 
-  // Handle auth paths separately
-  if (url.pathname.startsWith('/auth/')) {
-    console.log('Auth path detected, bypassing rewrite:', url.pathname)
-    return NextResponse.next()
-  }
+  const customSubdomain = hostname?.split(`.${domain}`)[0]?.toLowerCase()
+  const searchParams = url.searchParams.toString()
+  const pathWithSearchParams = url.pathname + (searchParams ? `?${searchParams}` : '')
 
-  // Redirect main domain to /site
-  if (hostname === domain) {
-    console.log('Redirecting main domain to /site')
+  // const authToken = request.cookies.get('session-token')
+  // const session = authToken?.value
+
+  console.log('1')
+  console.log(customSubdomain, hostname, url.pathname)
+  if (customSubdomain === hostname && pathWithSearchParams === '/') {
+    console.log('2')
     url.pathname = '/site'
     return NextResponse.rewrite(url)
   }
 
-  // Rewrite subdomain to specific path
-  const subdomain = hostname?.split(`.${domain}`)[0]?.toLowerCase()
-  console.log('Subdomain detected:', subdomain)
+  if (customSubdomain === 'supplier') {
+    console.log('3')
+    if (pathWithSearchParams.startsWith(`/${customSubdomain}`)) {
+      console.log('4')
+      const purePath = pathWithSearchParams.split(`/${customSubdomain}`)[1]
 
-  if (subdomain === 'supplier') {
-    console.log('Rewriting supplier subdomain to /supplier')
-    url.pathname = '/supplier'
+      url.pathname = `/${purePath}`
+
+      return NextResponse.redirect(url)
+    }
+
+    url.pathname = `/${customSubdomain}${pathWithSearchParams}`
     return NextResponse.rewrite(url)
   }
 
-  // Continue with the original request if no conditions are met
-  console.log('No rewrite or redirect needed, continuing with the original request')
   return NextResponse.next()
-})
-
-// export default auth(async (request) => {
-//   const session = await getSession()
-//   console.log(session)
-
-//   const hostname = request.headers.get('host')
-//   const domain = process.env.NEXT_PUBLIC_DOMAIN
-
-//   // Clone the URL to manipulate the path
-//   const url = request.nextUrl.clone()
-
-//   console.log('Incoming request for:', hostname, 'Path:', url.pathname)
-
-//   // Check if the domain variable is set correctly
-//   if (!domain) {
-//     console.error('NEXT_PUBLIC_DOMAIN is not defined')
-//     return NextResponse.next()
-//   }
-
-//   // Handle auth paths separately
-//   if (url.pathname.startsWith('/auth/')) {
-//     console.log('Auth path detected, bypassing rewrite:', url.pathname)
-//     return NextResponse.next()
-//   }
-
-//   // Redirect main domain to /site
-//   if (hostname === domain) {
-//     console.log('Redirecting main domain to /site')
-//     url.pathname = '/site'
-//     return NextResponse.rewrite(url)
-//   }
-
-//   // Rewrite subdomain to specific path
-//   const subdomain = hostname?.split(`.${domain}`)[0]?.toLowerCase()
-//   console.log('Subdomain detected:', subdomain)
-
-//   if (subdomain === 'supplier') {
-//     console.log('Rewriting supplier subdomain to /supplier')
-//     url.pathname = '/supplier'
-//     return NextResponse.rewrite(url)
-//   }
-
-//   // Continue with the original request if no conditions are met
-//   console.log('No rewrite or redirect needed, continuing with the original request')
-//   return NextResponse.next()
-// })
-//   const hostname = request.headers.get('host')
-//   const domain = process.env.NEXT_PUBLIC_DOMAIN
-
-//   if (!domain) {
-//     console.error('NEXT_PUBLIC_DOMAIN is not defined')
-//     return NextResponse.next()
-//   }
-
-//   const customSubdomain = hostname?.split(`.${domain}`)[0]?.toLowerCase()
-//   const url = request.nextUrl.clone()
-//   const searchParams = url.searchParams.toString()
-
-//   const pathWithSearchParams = url.pathname + (searchParams ? `?${searchParams}` : '')
-
-//   if (customSubdomain !== hostname) {
-//     if (pathWithSearchParams.startsWith(`/${customSubdomain}`)) {
-//       const purePath = pathWithSearchParams.split(`/${customSubdomain}`)[1]
-
-//       url.pathname = `/${purePath}`
-
-//       return NextResponse.redirect(url)
-//     }
-
-//     url.pathname = `/${customSubdomain}${pathWithSearchParams}`
-//     return NextResponse.rewrite(url)
-//   }
-
-//   if (url.pathname === '/') {
-//     url.pathname = '/site'
-//     return NextResponse.rewrite(url)
-//   }
-
-//   return NextResponse.next()
-// })
+}
 
 export const config = {
   matcher: [
