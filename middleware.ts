@@ -23,7 +23,9 @@ export default async function middleware(request: NextRequest) {
     if (currentRouteConfig?.requiredAuth) {
       const session = request.cookies.get('session-token')
       if (!session) {
-        return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/auth/sign-up?userType=${customSubdomain}`)
+        return NextResponse.redirect(
+          `${process.env.NEXTAUTH_URL}/auth/sign-up?userType=${customSubdomain?.toLocaleUpperCase()}`
+        )
       }
     }
 
