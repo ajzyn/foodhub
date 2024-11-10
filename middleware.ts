@@ -23,7 +23,7 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.rewrite(url)
   }
 
-  console.log('customSubdomain', customSubdomain)
+  console.log('customSubdomain', customSubdomain, hostname, pathWithSearchParams)
   if (customSubdomain) {
     if (pathWithSearchParams.startsWith(`/${customSubdomain}`)) {
       const purePath = pathWithSearchParams.split(`/${customSubdomain}`)[1]
