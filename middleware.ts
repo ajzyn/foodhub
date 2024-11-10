@@ -1,11 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
 // import { getSession } from 'next-auth/react'
-export default async function middleware(request: NextRequest) {
+import { auth } from './auth'
+
+export default auth(async (request) => {
   // const session = await getSession()
   // console.log(session)
 
   const hostname = request.headers.get('host')
+  console.log(hostname)
   const domain = process.env.NEXT_PUBLIC_DOMAIN
 
   // Clone the URL to manipulate the path
@@ -45,7 +48,7 @@ export default async function middleware(request: NextRequest) {
   // Continue with the original request if no conditions are met
   console.log('No rewrite or redirect needed, continuing with the original request')
   return NextResponse.next()
-}
+})
 
 // export default auth(async (request) => {
 //   const session = await getSession()
