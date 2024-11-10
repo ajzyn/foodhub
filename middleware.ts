@@ -14,30 +14,18 @@ export default async function middleware(request: NextRequest) {
   const searchParams = url.searchParams.toString()
   const pathWithSearchParams = url.pathname + (searchParams ? `?${searchParams}` : '')
 
-  if (customSubdomain && customSubdomain === hostname) {
-    if (pathWithSearchParams === '/') {
-      url.pathname = '/site'
-      return NextResponse.rewrite(url)
-    }
+  if (customSubdomain !== hostname) {
+    url.pathname = `/${customSubdomain}${pathWithSearchParams}`
 
-    return NextResponse.next()
+    return NextResponse.rewrite(url)
   }
 
-  if (pathWithSearchParams.startsWith(`/${customSubdomain}`)) {
-    console.log('asdasasda')
-    console.log('asdasasda')
-    console.log('asdasasda')
-    console.log('asdasasda')
-    const purePath = pathWithSearchParams.split(`/${customSubdomain}`)[1]
-
-    url.pathname = `/${purePath}`
-
-    return NextResponse.redirect(url)
+  if (pathWithSearchParams === '/') {
+    url.pathname = '/site'
+    return NextResponse.rewrite(url)
   }
 
-  url.pathname = `/${customSubdomain}${pathWithSearchParams}`
-
-  return NextResponse.rewrite(url)
+  return NextResponse.next()
 }
 
 export const config = {
