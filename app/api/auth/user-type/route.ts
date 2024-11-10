@@ -1,5 +1,5 @@
 import getSession from '@/lib/getSession'
-import { setUserType } from '@/server/db/user'
+import { setUserType } from '@/server/db/auth'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {

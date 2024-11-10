@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getUserBySessionToken } from './server/db/auth'
 
 export default async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host')
   const domain = process.env.NEXT_PUBLIC_DOMAIN
   const url = request.nextUrl.clone()
+
+  const user = await getUserBySessionToken()
+  console.log('user', user)
 
   if (!domain) {
     console.error('NEXT_PUBLIC_DOMAIN is not defined')
@@ -19,6 +23,7 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.rewrite(url)
   }
 
+  console.log('customSubdomain', customSubdomain)
   if (customSubdomain) {
     if (pathWithSearchParams.startsWith(`/${customSubdomain}`)) {
       const purePath = pathWithSearchParams.split(`/${customSubdomain}`)[1]
