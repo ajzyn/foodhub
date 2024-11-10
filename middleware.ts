@@ -17,11 +17,10 @@ export default async function middleware(request: NextRequest) {
 
   if (customSubdomain !== hostname) {
     url.pathname = `/${customSubdomain}${pathWithSearchParams}`
-    const currentRouteConfig = routesConfig.find((route) => pathWithSearchParams.startsWith(route.matcher))
+
+    const currentRouteConfig = routesConfig.find((route) => url.pathname.startsWith(route.matcher))
 
     if (currentRouteConfig?.requiredAuth) {
-      console.log('--------------------')
-      console.log(url)
       const session = request.cookies.get('session-token')
       if (!session) {
         return NextResponse.redirect(`/auth/sign-up?userType=${customSubdomain}`)
