@@ -1,4 +1,6 @@
 import Footer from '@/components/footer'
+import Header from '@/domains/supplier/header'
+import Navigation from '@/domains/supplier/navigation'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -12,9 +14,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <>
-      {children}
-      <Footer />
-    </>
+    <div className="min-h-screen">
+      <Header />
+      <Navigation />
+      <div className="mt-16 ml-64">
+        <main className="p-4">{children}</main>
+        <Footer />
+      </div>
+    </div>
   )
 }

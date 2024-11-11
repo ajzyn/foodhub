@@ -1,4 +1,4 @@
-import getSession from '@/lib/getSession'
+import getSession from '@/lib/get-session'
 import { setUserType } from '@/server/db/auth'
 import { NextResponse } from 'next/server'
 
