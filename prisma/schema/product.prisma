@@ -1,0 +1,21 @@
+model Product {
+  id            Int      @id @default(autoincrement())
+  name          String
+  category      Category
+  description   String?
+  price         Float
+  bulkPrice     String?
+  minOrder      Int
+  leadTime      String?
+  supplier      Supplier[]
+  certifications String?
+
+  @@map("products")
+}
+
+enum Category {
+  MEAT
+  VEGETABLES
+  DAIRY
+  OTHER
+}

@@ -17,8 +17,8 @@ export default function RootLayout({
     <div className="min-h-screen">
       <Header />
       <Navigation />
-      <div className="mt-16 ml-64">
-        <main className="p-4">{children}</main>
+      <div className="mt-16 lg:ml-64 min-h-[calc(100vh-4rem)] flex flex-col">
+        <main className="p-4 bg-gray-100 flex-grow">{children}</main>
         <Footer />
       </div>
     </div>

@@ -1,12 +1,5 @@
-'use client'
+import HomePage from '@/domains/supplier/pages/home'
 
-import Link from 'next/link'
-
-export default function SupplierPage() {
-  return (
-    <>
-      <div>SupplierPage</div>
-      <Link href="/about">About</Link>
-    </>
-  )
+export default function SupplierHomePage() {
+  return <HomePage />
 }

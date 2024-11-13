@@ -1,0 +1,7 @@
+model Supplier {
+  id      String    @id
+  user    User      @relation(fields: [id], references: [id])
+  products Product[]
+
+  @@map("suppliers")
+}

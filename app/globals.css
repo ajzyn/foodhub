@@ -29,6 +29,9 @@ body {
     --accent: 240 4.8% 95.9%;
     --accent-foreground: 240 5.9% 10%;
     --destructive: 0 84.2% 60.2%;
+    --success: 12 76% 61%;
+    --warning: 36 100% 50%;
+    --info: 200 50% 50%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;

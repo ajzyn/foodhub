@@ -26,7 +26,7 @@ export default function Navigation() {
     <>
       {isNavOpened && <div className="fixed inset-0 bg-black/50 lg:hidden z-10" onClick={() => setNavOpen(false)} />}
       <aside
-        className={`absolute bg-white w-64 min-h-screen flex-shrink-0 ${
+        className={`fixed bg-white w-64 min-h-screen flex-shrink-0 ${
           isNavOpened ? ' inset-0 left-0 ' : '-translate-x-full'
         } transition-transform duration-300 ease-in-out lg:translate-x-0 pt-16 z-20`}
       >

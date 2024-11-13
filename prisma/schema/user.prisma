@@ -8,12 +8,15 @@ model User {
   permissions   Permission[]
   accounts      Account[]
   sessions      Session[]
+  supplier      Supplier?
+  restaurant    Restaurant?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("users")
 }
+
 
 model Account {
   userId            String
