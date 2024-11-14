@@ -7,6 +7,6 @@ export async function addProduct(product: Product): Promise<Product> {
 }
 
 export async function getProductById(id: string): Promise<Product> {
-  const response = await axios.get(`/products/edit/${id}`)
+  const response = await axios.get(`/products/${id}`)
   return response.data
 }
