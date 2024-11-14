@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import getSession from '@/lib/get-session'
 import { createProduct } from '@/server/db/products'
 
-import { productSchema } from '@/api/schemas/product'
+import { productSchema } from '@/api2/schemas/product'
 export async function POST(request: NextRequest) {
   const session = await getSession()
 

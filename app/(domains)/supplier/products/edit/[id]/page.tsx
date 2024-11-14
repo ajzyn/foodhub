@@ -1,5 +1,5 @@
-import { CacheKeys } from '@/api/cache-keys'
-import { getProductById } from '@/api/products'
+import { CacheKeys } from '@/api2/cache-keys'
+import { getProductById } from '@/api2/products'
 import EditProductForm from '@/domains/supplier/pages/products/edit-product'
 import { dehydrate, QueryClient, HydrationBoundary } from '@tanstack/react-query'
 import { UserType } from '@prisma/client'

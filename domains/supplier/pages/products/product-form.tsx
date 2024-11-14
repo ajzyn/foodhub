@@ -12,8 +12,8 @@ import { FormNumberField } from '@/components/form-fields/number'
 import { FormTextareaField } from '@/components/form-fields/textarea'
 import { PRODUCT_CATEGORIES } from './types'
 import { Product } from '@prisma/client'
-import { productSchema } from '@/api/schemas/product'
-import { addProduct } from '@/api/products'
+import { productSchema } from '@/api2/schemas/product'
+import { addProduct } from '@/api2/products'
 
 export default function ProductForm({ product }: { product?: Product }) {
   const { toast } = useToast()
