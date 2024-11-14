@@ -1,11 +1,17 @@
 import { CacheKeys } from '@/api/cache-keys'
 import { getProductById } from '@/api/products'
 import EditProductForm from '@/domains/supplier/pages/products/edit-product'
-import { useCheckSupplierAuthentication } from '@/hooks/use-check-supplier-auth'
 import { dehydrate, QueryClient, HydrationBoundary } from '@tanstack/react-query'
+import { UserType } from '@prisma/client'
+import getSession from '@/lib/get-session'
+import { redirect } from 'next/navigation'
 
 export default async function EditProduct({ params }: { params: { id: string } }) {
-  await useCheckSupplierAuthentication()
+  const session = await getSession()
+
+  if (!session || session.user.type !== UserType.SUPPLIER) {
+    redirect('/sign-in')
+  }
 
   const queryClient = new QueryClient()
 

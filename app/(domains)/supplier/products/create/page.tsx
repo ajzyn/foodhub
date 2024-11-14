@@ -1,8 +1,14 @@
 import ProductForm from '@/domains/supplier/pages/products/product-form'
-import { useCheckSupplierAuthentication } from '@/hooks/use-check-supplier-auth'
+import { UserType } from '@prisma/client'
+import { redirect } from 'next/navigation'
+import getSession from '@/lib/get-session'
 
 export default async function CreateProduct() {
-  await useCheckSupplierAuthentication()
+  const session = await getSession()
+
+  if (!session || session.user.type !== UserType.SUPPLIER) {
+    redirect('/sign-in')
+  }
 
   return (
     <>
