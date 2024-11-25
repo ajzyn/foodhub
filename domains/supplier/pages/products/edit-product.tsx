@@ -12,7 +12,8 @@ export default function EditProduct({ productId }: { productId: string }) {
     queryFn: () => getProductById(productId)
   })
 
-  if (error) return <ErrorAlert />
+  // if (error) return <ErrorAlert />
 
-  return <ProductForm product={data} />
+  // return <ProductForm product={data} />
+  return null
 }
