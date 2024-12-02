@@ -16,10 +16,8 @@ export default async function ProductsPage({ searchParams }: { searchParams: { c
     queryFn: () => getProducts(searchParams.category)
   })
 
-  const dehydratedState = dehydrate(queryClient)
-
   return (
-    <HydrationBoundary state={dehydratedState}>
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <ProductList />
     </HydrationBoundary>
   )

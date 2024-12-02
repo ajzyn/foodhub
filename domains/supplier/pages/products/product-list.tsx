@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import ProductGrid from './product-grid'
 import { useMedia } from '@/hooks/use-media'
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
 
 export default function ProductList() {
   const searchParams = useSearchParams()
@@ -58,33 +59,35 @@ export default function ProductList() {
         </Link>
       </div>
 
-      {isSmall ? (
-        <Tabs value={category} onValueChange={handleCategoryChange}>
-          <TabsList className="grid w-full grid-cols-4">
-            {Object.values(Category).map((category) => (
-              <TabsTrigger key={category} value={category}>
-                {category}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-      ) : (
-        <div>
-          <p className="text-sm text-muted-foreground mb-2">Kategoria</p>
-          <Select value={category} onValueChange={handleCategoryChange}>
-            <SelectTrigger className="bg-white w-full">
-              <SelectValue placeholder="Wybierz kategorię" />
-            </SelectTrigger>
-            <SelectContent>
+      <div className="my-8">
+        {isSmall ? (
+          <Tabs value={category} onValueChange={handleCategoryChange}>
+            <TabsList className="grid w-full grid-cols-4">
               {Object.values(Category).map((category) => (
-                <SelectItem key={category} value={category}>
+                <TabsTrigger key={category} value={category}>
                   {category}
-                </SelectItem>
+                </TabsTrigger>
               ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
+            </TabsList>
+          </Tabs>
+        ) : (
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">Kategoria</p>
+            <Select value={category} onValueChange={handleCategoryChange}>
+              <SelectTrigger className="bg-white w-full">
+                <SelectValue placeholder="Wybierz kategorię" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.values(Category).map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+      </div>
 
       <ProductGrid products={products ?? []} />
     </div>
