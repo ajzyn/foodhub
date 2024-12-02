@@ -3,11 +3,9 @@ import { NextResponse } from 'next/server'
 
 import { getProductById } from '@/server/db/products'
 import getSession from '@/lib/get-session'
-import { auth } from '@/auth'
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-  const session = await auth()
-  console.log('session', request)
+  const session = await getSession()
 
   if (!session) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })

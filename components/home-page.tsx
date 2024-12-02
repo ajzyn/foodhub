@@ -1,19 +1,19 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import Link from 'next/link'
 import { Search, Menu, X, User, LogOut, Bell, Package, ShoppingCart, BarChart2, PlusCircle } from 'lucide-react'
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 import { useRouter } from 'next/router'
 
 export function HomePageComponent() {
@@ -30,36 +30,37 @@ export function HomePageComponent() {
   }, [router])
 
   const sidebarLinks = [
-    { href: "/products", label: "Products", icon: <Package className="h-5 w-5" /> },
-    { href: "/orders", label: "Orders", icon: <ShoppingCart className="h-5 w-5" /> },
-    { href: "/analytics", label: "Analytics", icon: <BarChart2 className="h-5 w-5" /> },
-    { href: "/add-product", label: "Add Product", icon: <PlusCircle className="h-5 w-5" /> },
+    { href: '/products', label: 'Produkty', icon: <Package className="h-5 w-5" /> },
+    { href: '/orders', label: 'Zamówienia', icon: <ShoppingCart className="h-5 w-5" /> },
+    { href: '/analytics', label: 'Analizy', icon: <BarChart2 className="h-5 w-5" /> },
+    { href: '/add-product', label: 'Dodaj produkt', icon: <PlusCircle className="h-5 w-5" /> }
   ]
 
   return (
     <div className="min-h-screen bg-gray-100 flex overflow-hidden">
       {/* Sidebar */}
-      <aside className={`bg-white w-64 min-h-screen flex-shrink-0 ${isSidebarOpen ? 'fixed inset-y-0 left-0 z-50' : '-translate-x-full'} transition-transform duration-300 ease-in-out lg:sticky lg:translate-x-0 lg:top-0`}>
+      <aside
+        className={`bg-white w-64 min-h-screen flex-shrink-0 ${
+          isSidebarOpen ? 'fixed inset-y-0 left-0 z-50' : '-translate-x-full'
+        } transition-transform duration-300 ease-in-out lg:sticky lg:translate-x-0 lg:top-0`}
+      >
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
           <Link href="/" className="flex items-center">
             <img src="/placeholder.svg" alt="Logo" className="h-8 w-8 mr-2" />
             <span className="text-xl font-bold lg:hidden">RS</span>
           </Link>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden"
-            onClick={() => setIsSidebarOpen(false)}
-          >
+          <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setIsSidebarOpen(false)}>
             <X className="h-6 w-6" />
           </Button>
         </div>
         <nav className="flex-1 pt-4">
           {sidebarLinks.map((link) => (
-            <Link 
-              key={link.href} 
-              href={link.href} 
-              className={`flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 ${router.pathname === link.href ? 'bg-gray-100 border-r-4 border-indigo-500' : ''}`}
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 ${
+                router.pathname === link.href ? 'bg-gray-100 border-r-4 border-indigo-500' : ''
+              }`}
             >
               {link.icon}
               <span className="ml-3">{link.label}</span>
@@ -139,30 +140,26 @@ export function HomePageComponent() {
 
             <h1 className="text-3xl font-bold text-gray-900 mb-4">Welcome to Restaurant Supply Platform</h1>
             <p className="text-gray-600 mb-8">Streamline your supply chain and grow your business</p>
-            
+
             <div className="mb-8">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Button className="justify-center" asChild>
-                  <Link href="/add-product">Add New Product</Link>
+                  <Link href="/add-product">Dodaj produkt</Link>
                 </Button>
                 <Button className="justify-center" variant="outline" asChild>
-                  <Link href="/orders">View Recent Orders</Link>
+                  <Link href="/orders">Ostatnie zamówienia</Link>
                 </Button>
               </div>
             </div>
-            
+
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Search Products</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Szukaj produktów</h2>
               <div className="flex rounded-md shadow-sm">
-                <Input
-                  type="text"
-                  placeholder="Search for products..."
-                  className="flex-1 rounded-none rounded-l-md"
-                />
+                <Input type="text" placeholder="Szukaj produktów..." className="flex-1 rounded-none rounded-l-md" />
                 <Button type="button" className="-ml-px relative inline-flex items-center rounded-r-md">
                   <Search className="h-5 w-5" />
-                  <span className="sr-only">Search</span>
+                  <span className="sr-only">Szukaj</span>
                 </Button>
               </div>
             </div>

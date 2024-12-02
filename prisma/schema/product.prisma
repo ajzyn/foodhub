@@ -1,5 +1,5 @@
 model Product {
-  id            Int      @id @default(autoincrement())
+  id            String      @id @default(cuid())
   name          String
   category      Category
   description   String?
@@ -7,7 +7,10 @@ model Product {
   bulkPrice     String?
   minOrder      Int
   leadTime      String?
-  supplier      Supplier[]
+  supplier   Supplier     @relation(fields: [supplierId], references: [id])
+  supplierId String
+  orderItems  OrderItem[]
+  stock         Int
   certifications String?
 
   @@map("products")

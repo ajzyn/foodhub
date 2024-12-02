@@ -16,10 +16,10 @@ export default function Navigation() {
   }, [pathname, setNavOpen])
 
   const navItems = [
-    { href: '/products', label: 'Products', icon: <Package className="h-5 w-5" /> },
-    { href: '/orders', label: 'Orders', icon: <ShoppingCart className="h-5 w-5" /> },
-    { href: '/analytics', label: 'Analytics', icon: <BarChart2 className="h-5 w-5" /> },
-    { href: '/add-product', label: 'Add Product', icon: <PlusCircle className="h-5 w-5" /> }
+    { href: '/products', label: 'Produkty', icon: <Package className="h-5 w-5" /> },
+    { href: '/orders', label: 'Zamówienia', icon: <ShoppingCart className="h-5 w-5" /> },
+    { href: '/analytics', label: 'Analizy', icon: <BarChart2 className="h-5 w-5" /> },
+    { href: '/add-product', label: 'Dodaj produkt', icon: <PlusCircle className="h-5 w-5" /> }
   ]
 
   return (

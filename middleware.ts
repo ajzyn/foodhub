@@ -13,11 +13,11 @@ export default async function middleware(request: NextRequest) {
 
   const customSubdomain = hostname?.split(`.${domain}`)[0]?.toLowerCase()
   const searchParams = url.searchParams.toString()
-  const pathWithSearchParams = url.pathname + (searchParams ? `?${searchParams}` : '')
+  const pathname = url.pathname
 
   if (customSubdomain !== hostname) {
-    url.pathname = `/${customSubdomain}${pathWithSearchParams}`
-
+    url.pathname = `/${customSubdomain}${pathname}`
+    url.search = searchParams
     const currentRouteConfig = routesConfig.find((route) => url.pathname.startsWith(route.matcher))
 
     if (currentRouteConfig?.requiredAuth) {
@@ -32,7 +32,7 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.rewrite(url)
   }
 
-  if (pathWithSearchParams === '/') {
+  if (pathname === '/') {
     url.pathname = '/site'
     return NextResponse.rewrite(url)
   }

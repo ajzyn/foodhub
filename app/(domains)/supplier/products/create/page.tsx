@@ -1,19 +1,13 @@
 import ProductForm from '@/domains/supplier/pages/products/product-form'
-import { UserType } from '@prisma/client'
-import { redirect } from 'next/navigation'
-import getSession from '@/lib/get-session'
+import { Category } from '@prisma/client'
 
-export default async function CreateProduct() {
-  const session = await getSession()
-
-  if (!session || session.user.type !== UserType.SUPPLIER) {
-    redirect('/sign-in')
-  }
+export default async function CreateProduct({ searchParams }: { searchParams: { category: Category } }) {
+  const category = Object.values(Category).includes(searchParams.category) ? searchParams.category : undefined
 
   return (
     <>
       <h2 className="my-10 border-b pb-2 text-xl font-semibold tracking-tight first:mt-0">Dodaj produkt do oferty</h2>
-      <ProductForm />
+      <ProductForm category={category} />
     </>
   )
 }

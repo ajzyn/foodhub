@@ -11,17 +11,18 @@ import { FormSelectField } from '@/components/form-fields/select'
 import { FormNumberField } from '@/components/form-fields/number'
 import { FormTextareaField } from '@/components/form-fields/textarea'
 import { PRODUCT_CATEGORIES } from './types'
-import { Product } from '@prisma/client'
+import { Category, Product } from '@prisma/client'
 import { productSchema } from '@/api2/schemas/product'
 import { addProduct } from '@/api2/products'
 
-export default function ProductForm({ product }: { product?: Product }) {
+export default function ProductForm({ product, category }: { product?: Product; category?: Category }) {
   const { toast } = useToast()
   const methods = useForm<Product>({
     resolver: zodResolver(productSchema),
     defaultValues: product ?? {
       minOrder: 0,
-      price: 0
+      price: 0,
+      category: category
     }
   })
 
@@ -37,7 +38,6 @@ export default function ProductForm({ product }: { product?: Product }) {
       methods.reset()
     },
     onError: (error) => {
-      console.log('piasdasd')
       toast({
         variant: 'destructive',
         title: 'Błąd',
@@ -67,6 +67,7 @@ export default function ProductForm({ product }: { product?: Product }) {
 
         <FormSection title="Informacje o zamówieniu">
           <FormNumberField name="minOrder" label="Minimalne zamówienie" min={0} step="1" />
+          <FormNumberField name="stock" label="Stan magazynowy" min={1} step="1" />
           <FormTextField name="leadTime" label="Czas realizacji" placeholder="Wprowadź czas realizacji" />
         </FormSection>
 

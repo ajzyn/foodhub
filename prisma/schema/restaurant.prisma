@@ -1,6 +1,7 @@
 model Restaurant {
   id      String    @id
   user    User      @relation(fields: [id], references: [id])
+  orders  Order[]
 
   @@map("restaurants")
 }
