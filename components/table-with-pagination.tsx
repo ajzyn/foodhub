@@ -8,8 +8,8 @@ import { ChevronLeft } from 'lucide-react'
 interface TableWithPaginationProps<T> {
   columns: {
     header: string
-    accessorKey: keyof T
-    cell?: (value: any) => React.ReactNode
+    accessorKey?: keyof T
+    cell?: (value: T) => React.ReactNode
   }[]
   data: T[]
   pagination: {
@@ -49,7 +49,7 @@ export default function TableWithPagination<T>({ columns, data, pagination, isLo
               <TableRow key={index}>
                 {columns.map((column) => (
                   <TableCell key={String(column.accessorKey)}>
-                    {column.cell ? column.cell(row[column.accessorKey]) : String(row[column.accessorKey])}
+                    {column.cell ? column.cell(row) : column.accessorKey ? String(row[column.accessorKey]) : null}
                   </TableCell>
                 ))}
               </TableRow>

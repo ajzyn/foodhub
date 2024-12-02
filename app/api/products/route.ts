@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import getSession from '@/lib/get-session'
-import { createProduct, getProducts } from '@/server/db/products'
+import { createProduct, getProducts, getTotalProducts } from '@/server/db/products'
 
 import { productSchema } from '@/api2/schemas/product'
 import { Category } from '@prisma/client'
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
     const validatedData = productSchema.parse(body)
 
-    const product = await createProduct(validatedData)
+    const product = await createProduct(validatedData, session.user.id)
 
     return NextResponse.json({ message: 'Product created successfully', data: product }, { status: 201 })
   } catch (error) {
@@ -32,12 +32,27 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
   }
 
-  const category = request.nextUrl.searchParams.get('category') as Category
+  const searchParams = request.nextUrl.searchParams
+  const category = searchParams.get('category') as Category
+  const page = Number(searchParams.get('page')) || 1
+  const pageSize = Number(searchParams.get('pageSize')) || 10
+  const search = searchParams.get('search') || ''
 
   try {
-    const products = await getProducts(Category.MEAT)
+    const products = await getProducts(category, { page, pageSize, search })
 
-    return NextResponse.json({ message: 'Products fetched successfully', data: products }, { status: 200 })
+    const totalProducts = await getTotalProducts(category, { page, pageSize, search })
+
+    const totalPages = Math.ceil(totalProducts / pageSize)
+
+    return NextResponse.json(
+      {
+        message: 'Products fetched successfully',
+        data: products,
+        pagination: { currentPage: page, pageSize, totalPages, totalItems: products }
+      },
+      { status: 200 }
+    )
   } catch (error) {
     return NextResponse.json({ message: 'Error fetching products', error }, { status: 400 })
   }

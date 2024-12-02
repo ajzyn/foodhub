@@ -2,7 +2,6 @@
 
 import { Edit, Plus, Trash2 } from 'lucide-react'
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
@@ -11,12 +10,39 @@ import { useQuery } from '@tanstack/react-query'
 import { getProducts } from '@/api2/products'
 import { CacheKeys } from '@/api2/cache-keys'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Category } from '@prisma/client'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import ProductGrid from './product-grid'
+import { Category, Product } from '@prisma/client'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useMedia } from '@/hooks/use-media'
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
+import TableWithPagination from '@/components/table-with-pagination'
+
+const columns = [
+  {
+    header: 'Nazwa',
+    accessorKey: 'name' as const
+  },
+  {
+    header: 'Cena',
+    accessorKey: 'price' as const
+  },
+  {
+    header: 'Stan',
+    accessorKey: 'stock' as const
+  },
+  {
+    header: '',
+    cell: (product: Product) => (
+      <div className="flex space-x-2">
+        <Button variant="ghost" size="icon" className="hover:text-info">
+          <Edit className="h-4 w-4" />
+        </Button>
+        <Button variant="ghost" size="icon" className="hover:text-destructive">
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </div>
+    )
+  }
+]
 
 export default function ProductList() {
   const searchParams = useSearchParams()
@@ -24,9 +50,13 @@ export default function ProductList() {
   const router = useRouter()
   const category = searchParams.get('category') as Category
 
-  const { data: products } = useQuery({
-    queryKey: [CacheKeys.PRODUCTS, category],
-    queryFn: () => getProducts(category)
+  const page = parseInt(searchParams.get('page') ?? '1')
+  const pageSize = parseInt(searchParams.get('pageSize') ?? '10')
+  const search = searchParams.get('search') ?? ''
+
+  const { data, isFetching, error } = useQuery({
+    queryKey: [CacheKeys.PRODUCTS, { page, pageSize }, search, category],
+    queryFn: () => getProducts(category, { page, pageSize, search })
   })
 
   const handleCategoryChange = (category: string) => {
@@ -89,7 +119,15 @@ export default function ProductList() {
         )}
       </div>
 
-      <ProductGrid products={products ?? []} />
+      <TableWithPagination
+        columns={columns}
+        data={data?.data ?? []}
+        pagination={{
+          page,
+          pageSize,
+          totalPages: data?.pagination.totalPages ?? 1
+        }}
+      />
     </div>
   )
 }

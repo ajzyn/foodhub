@@ -4,7 +4,7 @@ import { Edit, Trash2 } from 'lucide-react'
 import { Product } from '@prisma/client'
 import isEmpty from 'lodash/isEmpty'
 
-export default function ProductGrid({ products }: { products: Product[] }) {
+export default function ProductTable({ products }: { products: Product[] }) {
   return (
     <Table>
       <TableHeader>

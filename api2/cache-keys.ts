@@ -1,4 +1,5 @@
 export enum CacheKeys {
   PRODUCT = 'PRODUCT',
-  PRODUCTS = 'PRODUCTS'
+  PRODUCTS = 'PRODUCTS',
+  ORDERS = 'ORDERS'
 }

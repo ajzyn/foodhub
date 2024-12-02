@@ -1,5 +1,6 @@
 'use client'
 
+import { CacheKeys } from '@/api2/cache-keys'
 import { getOrders } from '@/api2/orders'
 import TableWithPagination from '@/components/table-with-pagination'
 import { useQuery } from '@tanstack/react-query'
@@ -38,7 +39,7 @@ export default function OrderList() {
   const search = searchParams.get('search') ?? ''
 
   const { data, isFetching, error } = useQuery({
-    queryKey: ['orders', { page, pageSize }, search],
+    queryKey: [CacheKeys.ORDERS, { page, pageSize }, search],
     queryFn: () => getOrders({ page, pageSize, search })
   })
 

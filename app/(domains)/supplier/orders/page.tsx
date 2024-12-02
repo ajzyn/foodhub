@@ -1,3 +1,4 @@
+import { CacheKeys } from '@/api2/cache-keys'
 import { getOrders } from '@/api2/orders'
 import OrderList from '@/domains/supplier/pages/orders/order-list'
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
@@ -18,7 +19,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
   const queryClient = new QueryClient()
 
   await queryClient.prefetchQuery({
-    queryKey: ['orders', { page, pageSize }, search],
+    queryKey: [CacheKeys.ORDERS, { page, pageSize }, search],
     queryFn: () => getOrders({ page, pageSize, search })
   })
 
