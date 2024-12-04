@@ -9,6 +9,8 @@ model Order {
   totalAmount  Decimal      @db.Decimal(10, 2)
   orderDate    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
+
+  @@map("orders")
 }
 
 model OrderItem {
@@ -23,6 +25,7 @@ model OrderItem {
   updatedAt DateTime @updatedAt
 
   @@unique([orderId, productId])
+  @@map("order_items")
 }
 
 enum OrderStatus {

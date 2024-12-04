@@ -2,6 +2,8 @@ import getSession from '@/lib/get-session'
 import { setUserType } from '@/server/db/auth'
 import { NextResponse } from 'next/server'
 
+//TODO: create an general interface for all api responses
+
 export async function POST(request: Request) {
   const session = await getSession()
   const userId = session?.user?.id
@@ -17,9 +19,9 @@ export async function POST(request: Request) {
 
   try {
     await setUserType(userId, body.userType)
-    return NextResponse.json({ success: true })
+    return NextResponse.json(undefined, { status: 200 })
   } catch (error) {
-    console.error('Error setting user type:', error)
+    console.log('000000000000000000000000')
     return NextResponse.json({ error: 'Failed to set user type' }, { status: 500 })
   }
 }

@@ -1,4 +1,4 @@
-import { Product } from '@/api2/schemas/product'
+import { Product } from '@/api/schemas/product'
 import prisma from '@/lib/prisma'
 import { PaginationDBParams } from '@/types/pagination'
 import { Category } from '@prisma/client'

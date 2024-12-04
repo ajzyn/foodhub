@@ -6,4 +6,20 @@ export async function setUserType(userId: string, userType: UserType) {
     where: { id: userId },
     data: { type: userType }
   })
+
+  if (userType === UserType.SUPPLIER) {
+    await prisma.supplier.create({
+      data: {
+        id: userId
+      }
+    })
+  }
+
+  if (userType === UserType.RESTAURANT) {
+    await prisma.restaurant.create({
+      data: {
+        id: userId
+      }
+    })
+  }
 }

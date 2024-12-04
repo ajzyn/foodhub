@@ -7,14 +7,15 @@ import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
-import { getProducts } from '@/api2/products'
-import { CacheKeys } from '@/api2/cache-keys'
+import { getProducts } from '@/api/products'
+import { CacheKeys } from '@/api/cache-keys'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Category, Product } from '@prisma/client'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useMedia } from '@/hooks/use-media'
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select'
 import TableWithPagination from '@/components/table-with-pagination'
+import { parseNumberWithDefault } from '@/lib/utils'
 
 const columns = [
   {
@@ -46,13 +47,12 @@ const columns = [
 
 export default function ProductList() {
   const searchParams = useSearchParams()
-  const { isSmall } = useMedia()
   const router = useRouter()
-  const category = searchParams.get('category') as Category
 
-  const page = parseInt(searchParams.get('page') ?? '1')
-  const pageSize = parseInt(searchParams.get('pageSize') ?? '10')
-  const search = searchParams.get('search') ?? ''
+  const category = (searchParams.get('category') ?? Category.MEAT) as Category
+  const page = parseNumberWithDefault(searchParams.get('page'), 1)
+  const pageSize = parseNumberWithDefault(searchParams.get('pageSize'), 10)
+  const search = searchParams.get('search') || ''
 
   const { data, isFetching, error } = useQuery({
     queryKey: [CacheKeys.PRODUCTS, { page, pageSize }, search, category],
@@ -60,7 +60,19 @@ export default function ProductList() {
   })
 
   const handleCategoryChange = (category: string) => {
-    router.push(`/products?category=${category}`)
+    router.push(`/products?category=${category}&page=${page}&pageSize=${pageSize}`)
+  }
+
+  const handleSearchChange = (search: string) => {
+    router.push(`/products?category=${category}&search=${search}&page=${page}&pageSize=${pageSize}`)
+  }
+
+  const handlePageChange = (page: number) => {
+    router.push(`/products?category=${category}&search=${search}&page=${page}&pageSize=${pageSize}`)
+  }
+
+  const handlePageSizeChange = (pageSize: number) => {
+    router.push(`/products?category=${category}&search=${search}&page=${page}&pageSize=${pageSize}`)
   }
 
   return (
@@ -73,6 +85,8 @@ export default function ProductList() {
             type="text"
             placeholder="Szukaj produktów..."
             className="flex-1 rounded-none rounded-l-md focus-visible:ring-0 focus-visible:border-2"
+            value={search}
+            onChange={(e) => handleSearchChange(e.target.value)}
           />
           <Button
             type="button"
@@ -83,40 +97,38 @@ export default function ProductList() {
           </Button>
         </div>
         <Link href={`/products/create?category=${category}`} className="mb-4 sm:mb-0 ml-2">
-          <Button {...(!isSmall && { title: 'Dodaj produkt' })}>
+          <Button>
             <span className="hidden sm:inline">Dodaj produkt</span> <Plus className="h-5 w-5" />
           </Button>
         </Link>
       </div>
 
       <div className="my-8">
-        {isSmall ? (
-          <Tabs value={category} onValueChange={handleCategoryChange}>
-            <TabsList className="grid w-full grid-cols-4">
+        <Tabs className="sm:hidden" value={category} onValueChange={handleCategoryChange}>
+          <TabsList className="grid w-full grid-cols-4">
+            {Object.values(Category).map((category) => (
+              <TabsTrigger key={category} value={category}>
+                {category}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+
+        <div className="hidden sm:block">
+          <p className="text-sm text-muted-foreground mb-2">Kategoria</p>
+          <Select value={category} onValueChange={handleCategoryChange}>
+            <SelectTrigger className="bg-white w-full">
+              <SelectValue placeholder="Wybierz kategorię" />
+            </SelectTrigger>
+            <SelectContent>
               {Object.values(Category).map((category) => (
-                <TabsTrigger key={category} value={category}>
+                <SelectItem key={category} value={category}>
                   {category}
-                </TabsTrigger>
+                </SelectItem>
               ))}
-            </TabsList>
-          </Tabs>
-        ) : (
-          <div>
-            <p className="text-sm text-muted-foreground mb-2">Kategoria</p>
-            <Select value={category} onValueChange={handleCategoryChange}>
-              <SelectTrigger className="bg-white w-full">
-                <SelectValue placeholder="Wybierz kategorię" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.values(Category).map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <TableWithPagination
@@ -125,7 +137,9 @@ export default function ProductList() {
         pagination={{
           page,
           pageSize,
-          totalPages: data?.pagination.totalPages ?? 1
+          totalPages: data?.pagination.totalPages ?? 1,
+          onPageChange: handlePageChange,
+          onPageSizeChange: handlePageSizeChange
         }}
       />
     </div>

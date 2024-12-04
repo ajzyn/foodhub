@@ -1,4 +1,4 @@
-import fetchFromApi from '@/lib/fetchFromAPI'
+import fetchFromApi from '@/lib/fetch-from-api'
 import { PaginatedResponse, PaginationRequestParams } from '@/types/pagination'
 import { Order } from '@prisma/client'
 
@@ -10,12 +10,11 @@ import { Order } from '@prisma/client'
 //   return response.data
 // }
 
-export async function getOrderById(id: string): Promise<Order> {
-  const response = await fetchFromApi(`/products/${id}`)
-  return response.data
+export async function getOrderById(id: string) {
+  return await fetchFromApi<Order>(`/products/${id}`)
 }
 
-export async function getOrders(paginationParams: PaginationRequestParams): Promise<PaginatedResponse<Order>> {
+export async function getOrders(paginationParams: PaginationRequestParams) {
   const queryString = new URLSearchParams({
     page: paginationParams.page?.toString() ?? '1',
     pageSize: paginationParams.pageSize?.toString() ?? '10',
@@ -24,6 +23,5 @@ export async function getOrders(paginationParams: PaginationRequestParams): Prom
 
   const urlWithParams = `/orders?${queryString}`
 
-  const response = await fetchFromApi(urlWithParams)
-  return { data: response.data, pagination: response.pagination }
+  return await fetchFromApi<PaginatedResponse<Order>>(urlWithParams)
 }

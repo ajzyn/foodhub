@@ -1,4 +1,6 @@
-export default async function fetchFromApi(path: string, options?: RequestInit) {
+import { ApiResponse } from '@/types/response'
+
+export default async function fetchFromApi<T>(path: string, options?: RequestInit): Promise<T> {
   const baseUrl = typeof window === 'undefined' ? process.env.NEXTAUTH_URL + '/api' : '/api'
 
   const headers = {
@@ -23,9 +25,11 @@ export default async function fetchFromApi(path: string, options?: RequestInit) 
     credentials: 'include'
   })
 
-  if (!response.ok) {
-    throw new Error(`Error ${response.status}: ${response.statusText}`)
+  const data = await response.json()
+
+  if (!response.ok || response.status >= 400) {
+    throw new Error(data.error)
   }
 
-  return response.json()
+  return data
 }

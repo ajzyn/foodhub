@@ -16,6 +16,8 @@ interface TableWithPaginationProps<T> {
     page: number
     pageSize: number
     totalPages: number
+    onPageChange: (page: number) => void
+    onPageSizeChange: (pageSize: number) => void
   }
   isLoading?: boolean
 }
@@ -63,8 +65,7 @@ export default function TableWithPagination<T>({ columns, data, pagination, isLo
           <p className="text-sm">Elementów na stronę:</p>
           <Select
             value={String(pagination.pageSize)}
-            // onValueChange={(value) => pagination.setPageSize(Number(value))}>
-            onValueChange={(value) => console.log(value)}
+            onValueChange={(value) => pagination.onPageSizeChange(Number(value))}
           >
             <SelectTrigger className="h-8 w-[70px]">
               <SelectValue placeholder={pagination.pageSize} />
@@ -83,7 +84,7 @@ export default function TableWithPagination<T>({ columns, data, pagination, isLo
           <Button
             variant="outline"
             size="sm"
-            // onClick={() => pagination.setPage(pagination.page - 1)}
+            onClick={() => pagination.onPageChange(pagination.page - 1)}
             disabled={pagination.page === 1}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -94,8 +95,8 @@ export default function TableWithPagination<T>({ columns, data, pagination, isLo
           <Button
             variant="outline"
             size="sm"
-            // onClick={() => pagination.setPage(pagination.page + 1)}
-            disabled={pagination.page === pagination.totalPages}
+            onClick={() => pagination.onPageChange(pagination.page + 1)}
+            disabled={pagination.page === pagination.totalPages || !pagination.totalPages}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>

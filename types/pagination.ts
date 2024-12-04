@@ -1,6 +1,6 @@
 export interface PaginationRequestParams {
-  page?: number | string
-  pageSize?: number | string
+  page?: number
+  pageSize?: number
   search?: string
   [key: string]: any
 }

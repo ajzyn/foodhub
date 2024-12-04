@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import getSession from '@/lib/get-session'
 import { createProduct, getProducts, getTotalProducts } from '@/server/db/products'
 
-import { productSchema } from '@/api2/schemas/product'
+import { productSchema } from '@/api/schemas/product'
 import { Category } from '@prisma/client'
 
 export async function POST(request: NextRequest) {
@@ -14,6 +14,8 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json()
+    console.log(body)
+    console.log(session)
 
     const validatedData = productSchema.parse(body)
 
@@ -21,6 +23,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ message: 'Product created successfully', data: product }, { status: 201 })
   } catch (error) {
+    console.log(error)
     return NextResponse.json({ message: 'Error creating product', error }, { status: 400 })
   }
 }

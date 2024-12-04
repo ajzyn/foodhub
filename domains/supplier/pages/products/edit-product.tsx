@@ -1,7 +1,7 @@
 'use client'
 
-import { CacheKeys } from '@/api2/cache-keys'
-import { getProductById } from '@/api2/products'
+import { CacheKeys } from '@/api/cache-keys'
+import { getProductById } from '@/api/products'
 import ErrorAlert from '@/components/error-alert'
 import ProductForm from '@/domains/supplier/pages/products/product-form'
 import { useQuery } from '@tanstack/react-query'
@@ -11,6 +11,8 @@ export default function EditProduct({ productId }: { productId: string }) {
     queryKey: [CacheKeys.PRODUCT, productId],
     queryFn: () => getProductById(productId)
   })
+
+  //TODO: sprawdzić errrora
 
   if (error) return <ErrorAlert />
 

@@ -1,5 +1,5 @@
-import { CacheKeys } from '@/api2/cache-keys'
-import { getOrders } from '@/api2/orders'
+import { CacheKeys } from '@/api/cache-keys'
+import { getOrders } from '@/api/orders'
 import OrderList from '@/domains/supplier/pages/orders/order-list'
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
 
