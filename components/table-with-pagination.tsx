@@ -71,7 +71,7 @@ export default function TableWithPagination<T>({ columns, data, pagination, isLo
               <SelectValue placeholder={pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
-              {[10, 20, 30, 40, 50].map((size) => (
+              {[1, 2, 10, 40, 50].map((size) => (
                 <SelectItem key={size} value={String(size)}>
                   {size}
                 </SelectItem>

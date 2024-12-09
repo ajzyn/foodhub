@@ -1,7 +1,7 @@
 import Footer from '@/components/footer'
-import Header from '@/domains/supplier/header'
-import Navigation from '@/domains/supplier/navigation'
+import Navigation from './components/navigation'
 import type { Metadata } from 'next'
+import Header from './components/header'
 
 export const metadata: Metadata = {
   title: 'Foodhub - Supplier',

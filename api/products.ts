@@ -14,12 +14,12 @@ export async function getProductById(id: string) {
   return await fetchFromApi<Product>(`/products/${id}`)
 }
 
-export async function getProducts(category: Category, paginationParams: PaginationRequestParams) {
+export async function getProducts(paginationParams: PaginationRequestParams) {
   const queryString = new URLSearchParams({
     page: paginationParams.page?.toString() ?? '1',
     pageSize: paginationParams.pageSize?.toString() ?? '10',
     search: paginationParams.search ?? '',
-    category: category
+    category: paginationParams.category ?? Category.MEAT
   }).toString()
 
   const urlWithParams = `/products?${queryString}`

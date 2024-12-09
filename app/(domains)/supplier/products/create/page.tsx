@@ -1,4 +1,4 @@
-import ProductForm from '@/domains/supplier/pages/products/product-form'
+import ProductForm from '@/app/(domains)/supplier/products/components/product-form'
 import { Category } from '@prisma/client'
 
 export default async function CreateProduct({ searchParams }: { searchParams: { category: Category } }) {

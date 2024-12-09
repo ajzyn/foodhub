@@ -1,7 +1,7 @@
 import { CacheKeys } from '@/api/cache-keys'
 import { getProducts } from '@/api/products'
-import ProductList from '@/domains/supplier/pages/products/product-list'
-import { isValidNumber } from '@/lib/utils'
+import ProductList from '@/app/(domains)/supplier/products/components/product-list'
+import { isValidNumber } from '@/utils/numbers'
 import { Category } from '@prisma/client'
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
 import { redirect } from 'next/navigation'
@@ -30,15 +30,14 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   await queryClient.prefetchQuery({
     queryKey: [
       CacheKeys.PRODUCTS,
-      { page: searchParams.page, pageSize: searchParams.pageSize },
-      search,
-      searchParams.category
+      { page: searchParams.page, pageSize: searchParams.pageSize, search, category: searchParams.category }
     ],
     queryFn: () =>
-      getProducts(searchParams.category, {
+      getProducts({
         page: Number(searchParams.page),
         pageSize: Number(searchParams.pageSize),
-        search
+        search,
+        category: searchParams.category
       })
   })
 

@@ -1,6 +1,6 @@
 import { CacheKeys } from '@/api/cache-keys'
 import { getOrders } from '@/api/orders'
-import OrderList from '@/domains/supplier/pages/orders/order-list'
+import OrderList from '@/app/(domains)/supplier/orders/components/order-list'
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
 
 interface OrdersPageProps {

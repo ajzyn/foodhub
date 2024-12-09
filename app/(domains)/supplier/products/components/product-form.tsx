@@ -10,10 +10,10 @@ import { FormTextField } from '@/components/form-fields/text-field'
 import { FormSelectField } from '@/components/form-fields/select'
 import { FormNumberField } from '@/components/form-fields/number'
 import { FormTextareaField } from '@/components/form-fields/textarea'
-import { PRODUCT_CATEGORIES } from './types'
 import { Category, Product } from '@prisma/client'
 import { productSchema } from '@/api/schemas/product'
 import { addProduct } from '@/api/products'
+import { PRODUCT_CATEGORIES } from '@/data/product-categories'
 
 export default function ProductForm({ product, category }: { product?: Product; category?: Category }) {
   const { toast } = useToast()

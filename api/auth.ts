@@ -6,7 +6,6 @@ export async function setUserType(userType: UserType) {
     method: 'POST',
     body: JSON.stringify({ userType })
   })
-  console.log(response)
 
   return response
 }

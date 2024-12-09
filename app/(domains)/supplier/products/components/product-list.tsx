@@ -8,14 +8,11 @@ import { Search } from 'lucide-react'
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
 import { getProducts } from '@/api/products'
-import { CacheKeys } from '@/api/cache-keys'
-import { useRouter, useSearchParams } from 'next/navigation'
 import { Category, Product } from '@prisma/client'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useMedia } from '@/hooks/use-media'
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select'
 import TableWithPagination from '@/components/table-with-pagination'
-import { parseNumberWithDefault } from '@/lib/utils'
+import { useDebounceTable } from '@/hooks/use-table-filters'
 
 const columns = [
   {
@@ -46,33 +43,44 @@ const columns = [
 ]
 
 export default function ProductList() {
-  const searchParams = useSearchParams()
-  const router = useRouter()
+  const {
+    tableParams: { page, pageSize, search },
+    additionalFilters: { category },
+    setSearch,
+    setPage,
+    setPageSize,
+    setFilter
+  } = useDebounceTable({
+    initialFilters: {
+      category: Category.MEAT
+    }
+  })
 
-  const category = (searchParams.get('category') ?? Category.MEAT) as Category
-  const page = parseNumberWithDefault(searchParams.get('page'), 1)
-  const pageSize = parseNumberWithDefault(searchParams.get('pageSize'), 10)
-  const search = searchParams.get('search') || ''
-
-  const { data, isFetching, error } = useQuery({
-    queryKey: [CacheKeys.PRODUCTS, { page, pageSize }, search, category],
-    queryFn: () => getProducts(category, { page, pageSize, search })
+  const { data, isFetching } = useQuery({
+    queryKey: ['products', { page, pageSize }, search, category],
+    queryFn: () =>
+      getProducts({
+        page,
+        pageSize,
+        search,
+        category
+      })
   })
 
   const handleCategoryChange = (category: string) => {
-    router.push(`/products?category=${category}&page=${page}&pageSize=${pageSize}`)
-  }
-
-  const handleSearchChange = (search: string) => {
-    router.push(`/products?category=${category}&search=${search}&page=${page}&pageSize=${pageSize}`)
+    setFilter('category', category)
   }
 
   const handlePageChange = (page: number) => {
-    router.push(`/products?category=${category}&search=${search}&page=${page}&pageSize=${pageSize}`)
+    setPage(page)
   }
 
   const handlePageSizeChange = (pageSize: number) => {
-    router.push(`/products?category=${category}&search=${search}&page=${page}&pageSize=${pageSize}`)
+    setPageSize(pageSize)
+  }
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value)
   }
 
   return (
@@ -86,7 +94,7 @@ export default function ProductList() {
             placeholder="Szukaj produktów..."
             className="flex-1 rounded-none rounded-l-md focus-visible:ring-0 focus-visible:border-2"
             value={search}
-            onChange={(e) => handleSearchChange(e.target.value)}
+            onChange={handleSearchChange}
           />
           <Button
             type="button"
@@ -104,7 +112,7 @@ export default function ProductList() {
       </div>
 
       <div className="my-8">
-        <Tabs className="sm:hidden" value={category} onValueChange={handleCategoryChange}>
+        <Tabs className="sm:hidden" value={category as string} onValueChange={handleCategoryChange}>
           <TabsList className="grid w-full grid-cols-4">
             {Object.values(Category).map((category) => (
               <TabsTrigger key={category} value={category}>
@@ -116,7 +124,7 @@ export default function ProductList() {
 
         <div className="hidden sm:block">
           <p className="text-sm text-muted-foreground mb-2">Kategoria</p>
-          <Select value={category} onValueChange={handleCategoryChange}>
+          <Select value={category as string} onValueChange={handleCategoryChange}>
             <SelectTrigger className="bg-white w-full">
               <SelectValue placeholder="Wybierz kategorię" />
             </SelectTrigger>
