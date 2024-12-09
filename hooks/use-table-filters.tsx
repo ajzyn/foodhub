@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react'
 import { debounce } from 'lodash'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
-interface UseDebounceTableProps {
+interface UseTableFiltersProps<T> {
   delayMs?: number
   updateUrl?: boolean
-  initialFilters?: Record<string, string | number>
+  initialFilters?: T
 }
 
 interface TableParams {
@@ -14,11 +14,11 @@ interface TableParams {
   search: string
 }
 
-export const useDebounceTable = ({
+export const useTableFilters = <T extends {}>({
   delayMs = 1000,
   updateUrl = true,
-  initialFilters = {}
-}: UseDebounceTableProps = {}) => {
+  initialFilters = {} as T
+}: UseTableFiltersProps<T> = {}) => {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -29,8 +29,8 @@ export const useDebounceTable = ({
     search: searchParams.get('search') || ''
   })
 
-  const [additionalFilters, setAdditionalFilters] = useState<Record<string, string | number>>(
-    Object.fromEntries(Object.entries(initialFilters).map(([key, value]) => [key, searchParams.get(key) || value]))
+  const [additionalFilters, setAdditionalFilters] = useState<T>(
+    Object.fromEntries(Object.entries(initialFilters).map(([key, value]) => [key, searchParams.get(key) || value])) as T
   )
 
   const updateUrlParams = (params: Record<string, string | number | undefined>) => {
@@ -87,14 +87,14 @@ export const useDebounceTable = ({
     }))
   }
 
-  const setFilter = (key: string, value: string | number | null) => {
+  const setFilter = (key: keyof T, value: string | number | null) => {
     setAdditionalFilters((prev) => {
       const newFilters = { ...prev }
 
       if (value === null) {
         delete newFilters[key]
       } else {
-        newFilters[key] = value
+        newFilters[key] = value as T[keyof T]
       }
 
       return newFilters

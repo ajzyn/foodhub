@@ -12,7 +12,7 @@ import { Category, Product } from '@prisma/client'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select'
 import TableWithPagination from '@/components/table-with-pagination'
-import { useDebounceTable } from '@/hooks/use-table-filters'
+import { useTableFilters } from '@/hooks/use-table-filters'
 
 const columns = [
   {
@@ -50,7 +50,7 @@ export default function ProductList() {
     setPage,
     setPageSize,
     setFilter
-  } = useDebounceTable({
+  } = useTableFilters<{ category: Category }>({
     initialFilters: {
       category: Category.MEAT
     }
@@ -84,7 +84,7 @@ export default function ProductList() {
   }
 
   return (
-    <div className="p-6">
+    <div>
       <h1 className="text-3xl font-bold mb-6">Produkty</h1>
 
       <div className="mb-4 flex justify-between sm:items-center flex-col-reverse sm:flex-row items-end">
