@@ -21,7 +21,6 @@ export async function POST(request: Request) {
     await setUserType(userId, body.userType)
     return NextResponse.json(undefined, { status: 200 })
   } catch (error) {
-    console.log('000000000000000000000000')
     return NextResponse.json({ error: 'Failed to set user type' }, { status: 500 })
   }
 }

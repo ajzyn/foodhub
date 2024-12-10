@@ -21,7 +21,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ message: 'Product created successfully', data: product }, { status: 201 })
   } catch (error) {
-    console.log(error)
     return NextResponse.json({ message: 'Error creating product', error }, { status: 400 })
   }
 }

@@ -1,7 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { routesConfig } from './lib/routes'
+import NextAuth from 'next-auth'
+import authConfig from './lib/auth-config'
 
-export default async function middleware(request: NextRequest) {
+const { auth: middleware } = NextAuth(authConfig)
+
+export default middleware((request) => {
   const hostname = request.headers.get('host')
   const domain = process.env.NEXT_PUBLIC_DOMAIN
   const url = request.nextUrl.clone()
@@ -16,6 +20,10 @@ export default async function middleware(request: NextRequest) {
   const pathname = url.pathname
 
   if (customSubdomain !== hostname) {
+    // if (customSubdomain !== request.auth?.user.type.toLowerCase()) {
+    //   return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/auth/sign-up?userType=${customSubdomain}`)
+    // }
+
     url.pathname = `/${customSubdomain}${pathname}`
     url.search = searchParams
     const currentRouteConfig = routesConfig.find((route) => url.pathname.startsWith(route.matcher))
@@ -23,9 +31,7 @@ export default async function middleware(request: NextRequest) {
     if (currentRouteConfig?.requiredAuth) {
       const session = request.cookies.get('session-token')
       if (!session) {
-        return NextResponse.redirect(
-          `${process.env.NEXTAUTH_URL}/auth/sign-up?userType=${customSubdomain?.toLocaleUpperCase()}`
-        )
+        return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/auth/sign-up?userType=${customSubdomain}`)
       }
     }
 
@@ -38,7 +44,7 @@ export default async function middleware(request: NextRequest) {
   }
 
   return NextResponse.next()
-}
+})
 
 export const config = {
   matcher: [

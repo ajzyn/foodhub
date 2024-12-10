@@ -2,12 +2,12 @@
 
 import { UserType } from '@prisma/client'
 import { Button } from '@/components/ui/button'
-import { handleGithubSignIn, handleGoogleSignIn } from '@/server/actions/auth'
 import { Separator } from '@/components/ui/separator'
 import { Card, CardTitle, CardContent, CardHeader } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsTrigger, TabsList } from '@/components/ui/tabs'
 import { Github } from 'lucide-react'
 import SignInForm from './sign-in-form'
+import { signIn } from '@/lib/auth'
 
 export default function SignUp({ userType }: { userType: UserType }) {
   return (
@@ -33,11 +33,23 @@ export default function SignUp({ userType }: { userType: UserType }) {
           <div className="mt-6">
             <Separator className="my-4" />
             <div className="space-y-2">
-              <Button variant="outline" className="w-full" onClick={() => handleGithubSignIn(userType)}>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={async () =>
+                  await signIn('github', { redirectTo: `/auth/complete-registration?type=${userType}` })
+                }
+              >
                 <Github className="mr-2 h-4 w-4" />
                 Kontynuuj z GitHub
               </Button>
-              <Button variant="outline" className="w-full" onClick={() => handleGoogleSignIn(userType)}>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={async () =>
+                  await signIn('google', { redirectTo: `/auth/complete-registration?type=${userType}` })
+                }
+              >
                 <Github className="mr-2 h-4 w-4" />
                 Kontynuuj z Google
               </Button>

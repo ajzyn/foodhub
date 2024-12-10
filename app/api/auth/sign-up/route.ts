@@ -12,8 +12,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'Invalid user type', error: 'Invalid user type' }, { status: 400 })
     }
 
-    console.log(authData)
-
     const validatedData = userSchema.parse(authData)
 
     const hashedPassword = await hashPassword(validatedData.password)
@@ -22,7 +20,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ message: 'User created successfully', data: user }, { status: 201 })
   } catch (error) {
-    console.error(error)
     return NextResponse.json({ message: 'Error creating user', error }, { status: 400 })
   }
 }

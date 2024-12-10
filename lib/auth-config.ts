@@ -50,6 +50,9 @@ export default {
   },
 
   callbacks: {
+    authorized: async ({ auth }) => {
+      return !!auth
+    },
     async signIn({ user, account }) {
       const existingUserProviders = await getUserProviders(user.email as string)
 
