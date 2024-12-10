@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input'
 import { FormFieldProps } from './types'
 import { FormFieldWrapper } from './wrapper'
 
-export function FormTextField({ label, name, placeholder, className }: FormFieldProps) {
+export function FormTextField({ label, name, placeholder, className, ...props }: FormFieldProps) {
   const {
     register,
     formState: { errors }
@@ -19,6 +19,7 @@ export function FormTextField({ label, name, placeholder, className }: FormField
         {...register(name)}
         aria-invalid={!!errorMessage}
         className={errorMessage ? 'bg-red-50 border-red-500' : ''}
+        {...props}
       />
     </FormFieldWrapper>
   )

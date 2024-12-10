@@ -1,3 +1,4 @@
+import { hashPassword, verifyPassword } from '@/utils/password'
 import prisma from '@/lib/prisma'
 import { UserType } from '@prisma/client'
 
@@ -22,4 +23,33 @@ export async function setUserType(userId: string, userType: UserType) {
       }
     })
   }
+}
+
+export async function createUser(email: string, password: string, type: UserType) {
+  return await prisma.user.create({
+    data: {
+      email,
+      type,
+      password
+    }
+  })
+}
+
+export async function getUser(email: string) {
+  return await prisma.user.findUnique({
+    where: { email }
+  })
+}
+
+export async function getUserProviders(email: string) {
+  return await prisma.user.findUnique({
+    where: { email },
+    select: {
+      accounts: {
+        select: {
+          provider: true
+        }
+      }
+    }
+  })
 }

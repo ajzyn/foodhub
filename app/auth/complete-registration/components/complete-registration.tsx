@@ -40,7 +40,7 @@ export default function CompleteRegistration({ userType }: { userType: UserType 
     }
 
     window.location.href = destinationDomainUrl
-  }, [session])
+  }, [session, destinationDomainUrl, userType, setUserTypeMutation])
 
   //TODO: suggestiom to complete profile
   return <Loader2 className="animate-spin" />

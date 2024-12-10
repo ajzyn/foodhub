@@ -1,5 +1,3 @@
-import { ApiResponse } from '@/types/response'
-
 export default async function fetchFromApi<T>(path: string, options?: RequestInit): Promise<T> {
   const baseUrl = typeof window === 'undefined' ? process.env.NEXTAUTH_URL + '/api' : '/api'
 

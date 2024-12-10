@@ -1,4 +1,6 @@
-export interface FormFieldProps {
+import { InputProps } from '@/components/ui/input'
+
+export interface FormFieldProps extends InputProps {
   label: string
   name: string
   placeholder?: string

@@ -1,7 +1,8 @@
 import fetchFromApi from '@/lib/fetch-from-api'
 import { PaginationRequestParams } from '@/types/pagination'
 import { PaginatedResponse } from '@/types/pagination'
-import { Category, Product } from '@prisma/client'
+import { Category } from '@prisma/client'
+import { Product } from './schemas/product'
 
 export async function addProduct(product: Product) {
   return await fetchFromApi<Product>('/products', {

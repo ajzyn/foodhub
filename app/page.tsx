@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { categories } from '../lib/data'
-import { ProductGrid } from './components/product-grid'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export default function ProductCategoriesView() {
   const [activeTab, setActiveTab] = useState(categories[0].id)
@@ -25,14 +24,13 @@ export default function ProductCategoriesView() {
               </TabsTrigger>
             ))}
           </TabsList>
-          {categories.map((category) => (
+          {/* {categories.map((category) => (
             <TabsContent key={category.id} value={category.id}>
               <ProductGrid products={category.products} />
             </TabsContent>
-          ))}
+          ))} */}
         </Tabs>
       </main>
     </div>
   )
 }
-

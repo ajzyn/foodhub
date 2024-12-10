@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { routesConfig } from './lib/auht'
+import { routesConfig } from './lib/routes'
 
 export default async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host')

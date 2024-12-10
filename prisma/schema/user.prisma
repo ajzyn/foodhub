@@ -3,6 +3,7 @@ model User {
   name          String?
   email         String          @unique
   emailVerified DateTime?
+  password  String?
   image         String?
   type          UserType?
   permissions   Permission[]
