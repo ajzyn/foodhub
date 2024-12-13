@@ -7,7 +7,8 @@ export const routesConfig = [
     requiredPermissions: [Permission.ADMIN]
   },
   {
-    matcher: '/supplier/admin',
-    requiredAuth: false
+    matcher: '/restaurant/admin',
+    requiredAuth: true,
+    requiredPermissions: [Permission.ADMIN]
   }
 ]

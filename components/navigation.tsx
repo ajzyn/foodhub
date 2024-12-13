@@ -1,26 +1,19 @@
 'use client'
 
-import { useEffect } from 'react'
-import Link from 'next/link'
-import { Package, ShoppingCart, BarChart2, PlusCircle } from 'lucide-react'
-
-import { usePathname } from 'next/navigation'
+import { NavItem } from '@/types/nav-items'
 import { useMobileNavigationStore } from '@/stores/use-mobile-navigation-store'
 
-export default function Navigation() {
+import { useEffect } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+
+export default function Navigation({ navItems }: { navItems: NavItem[] }) {
   const { isNavOpened, setNavOpen } = useMobileNavigationStore()
   const pathname = usePathname()
 
   useEffect(() => {
     setNavOpen(false)
   }, [pathname, setNavOpen])
-
-  const navItems = [
-    { href: '/products', label: 'Produkty', icon: <Package className="h-5 w-5" /> },
-    { href: '/orders', label: 'Zamówienia', icon: <ShoppingCart className="h-5 w-5" /> },
-    { href: '/analytics', label: 'Analizy', icon: <BarChart2 className="h-5 w-5" /> },
-    { href: '/add-product', label: 'Dodaj produkt', icon: <PlusCircle className="h-5 w-5" /> }
-  ]
 
   return (
     <>
@@ -36,7 +29,7 @@ export default function Navigation() {
               key={link.href}
               href={link.href}
               className={`flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 ${
-                pathname === link.href ? 'bg-gray-100 border-r-4 border-indigo-500' : ''
+                pathname.includes(link.href) ? 'bg-gray-100 border-r-4 border-indigo-500' : ''
               }`}
             >
               {link.icon}

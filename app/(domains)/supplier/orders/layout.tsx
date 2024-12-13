@@ -1,7 +1,7 @@
-import getSession from '@/lib/get-session'
 import { UserType } from '@prisma/client'
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { auth } from '@/lib/auth'
 
 export const metadata: Metadata = {
   title: 'Foodhub - Supplier',
@@ -13,7 +13,7 @@ export default async function OrdersLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const session = await getSession()
+  const session = await auth()
 
   if (!session || session.user.type !== UserType.SUPPLIER) {
     redirect('/sign-in')

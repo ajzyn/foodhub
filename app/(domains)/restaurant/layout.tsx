@@ -1,24 +1,22 @@
 import Footer from '@/components/footer'
 import Navigation from '@/components/navigation'
-import { NavItem } from '@/types/nav-items'
 
 import type { Metadata } from 'next'
-import { Package, ShoppingCart, BarChart2, PlusCircle } from 'lucide-react'
+import { NavItem } from '@/types/nav-items'
+import { ShoppingCart } from 'lucide-react'
 import Header from '@/components/header'
 
 export const metadata: Metadata = {
-  title: 'Foodhub - Supplier',
-  description: 'Foodhub - Supplier Management'
+  title: 'Foodhub - Restauracja',
+  description: 'Foodhub - Restauracja'
 }
 
 const navItems: NavItem[] = [
-  { href: '/products', label: 'Produkty', icon: <Package className="h-5 w-5" /> },
-  { href: '/orders', label: 'Zamówienia', icon: <ShoppingCart className="h-5 w-5" /> },
-  { href: '/analytics', label: 'Analizy', icon: <BarChart2 className="h-5 w-5" /> },
-  { href: '/add-product', label: 'Dodaj produkt', icon: <PlusCircle className="h-5 w-5" /> }
+  // { href: '/products', label: 'Szukaj produktów', icon: <Package className="h-5 w-5" /> },
+  { href: '/orders', label: 'Moje Zamówienia', icon: <ShoppingCart className="h-5 w-5" /> }
 ]
 
-export default async function SupplierLayout({
+export default async function RestaurantLayout({
   children
 }: Readonly<{
   children: React.ReactNode

@@ -1,11 +1,11 @@
-import getSession from '@/lib/get-session'
+import { auth } from '@/lib/auth'
 import { setUserType } from '@/server/db/auth'
 import { NextResponse } from 'next/server'
 
 //TODO: create an general interface for all api responses
 
 export async function POST(request: Request) {
-  const session = await getSession()
+  const session = await auth()
   const userId = session?.user?.id
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

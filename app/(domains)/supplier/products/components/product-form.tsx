@@ -13,16 +13,23 @@ import { FormTextareaField } from '@/components/form-fields/textarea'
 import { Category } from '@prisma/client'
 import { Product, productSchema } from '@/api/schemas/product'
 import { addProduct } from '@/api/products'
-import { PRODUCT_CATEGORIES } from '@/data/product-categories'
 
-export default function ProductForm({ product, category }: { product?: Product; category?: Category }) {
+export default function ProductForm({
+  product,
+  category,
+  categories
+}: {
+  product?: Product
+  category?: Category
+  categories: Category[]
+}) {
   const { toast } = useToast()
   const methods = useForm<Product>({
     resolver: zodResolver(productSchema),
     defaultValues: product ?? {
       minOrder: 0,
       price: 0,
-      category: category
+      category: category?.name
     }
   })
 
@@ -56,7 +63,11 @@ export default function ProductForm({ product, category }: { product?: Product; 
       <form onSubmit={methods.handleSubmit(onSubmit)}>
         <FormSection title="Szczegóły produktu">
           <FormTextField name="name" label="Nazwa produktu" placeholder="Wprowadź nazwę produktu" />
-          <FormSelectField name="category" label="Kategoria" options={PRODUCT_CATEGORIES} />
+          <FormSelectField
+            name="category"
+            label="Kategoria"
+            options={categories.map((c) => ({ value: c.name, label: c.name }))}
+          />
           <FormTextareaField name="description" label="Opis" placeholder="Wprowadź opis produktu" />
         </FormSection>
 

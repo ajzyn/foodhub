@@ -1,4 +1,4 @@
-import getSession from '@/lib/get-session'
+import { auth } from '@/lib/auth'
 import { UserType } from '@prisma/client'
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
@@ -13,7 +13,7 @@ export default async function ProductsLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const session = await getSession()
+  const session = await auth()
 
   if (!session || session.user.type !== UserType.SUPPLIER) {
     redirect('/sign-in')

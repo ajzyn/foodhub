@@ -1,66 +1,103 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import { Menu, X, User, LogOut, Bell } from 'lucide-react'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
-import { useMobileNavigationStore } from '@/stores/use-mobile-navigation-store'
 import Image from 'next/image'
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { motion } from 'framer-motion'
+import { Menu, X } from 'lucide-react'
 
 export default function Header() {
-  const { toggleNavOpen, isNavOpened } = useMobileNavigationStore()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [activeSection, setActiveSection] = useState('home')
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['home', 'about', 'features', 'benefits']
+      const currentSection = sections.find((section) => {
+        const element = document.getElementById(section)
+        if (element) {
+          const rect = element.getBoundingClientRect()
+          return rect.top <= 100 && rect.bottom >= 100
+        }
+        return false
+      })
+      if (currentSection) {
+        setActiveSection(currentSection)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+    setIsMenuOpen(false)
+  }
+
+  const navItems = [
+    { name: 'Home', href: 'hero' },
+    { name: 'About', href: 'about' },
+    { name: 'Features', href: 'features' },
+    { name: 'Benefits', href: 'benefits' }
+  ]
 
   return (
-    <header className="bg-white shadow-sm fixed top-0 inset-x-0 z-30">
-      <div className="px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
-            <Button variant="ghost" className="lg:hidden mr-2" onClick={toggleNavOpen} aria-label="Toggle sidebar">
-              {isNavOpened ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
+    <>
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white bg-opacity-90 backdrop-blur-sm shadow-sm">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between py-4">
             <Link href="/" className="flex items-center space-x-2">
               <Image src="/images/logo.png" alt="FoodHub" width={40} height={40} className="rounded-md" />
               <span className="text-xl font-bold">FoodHub</span>
             </Link>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="icon">
-              <Bell className="h-5 w-5" />
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <User className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">John Doe</p>
-                    <p className="text-xs leading-none text-muted-foreground">john@example.com</p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Account settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <nav className="hidden md:flex space-x-8">
+              {navItems.map((item) => (
+                <button
+                  key={item.name}
+                  onClick={() => scrollToSection(item.href)}
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    activeSection === item.href ? 'text-primary' : 'text-gray-600'
+                  }`}
+                >
+                  {item.name}
+                </button>
+              ))}
+            </nav>
+            <div className="md:hidden">
+              <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu">
+                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+      {isMenuOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="fixed inset-x-0 top-16 z-50 bg-white shadow-md md:hidden"
+        >
+          <nav className="flex flex-col p-4">
+            {navItems.map((item) => (
+              <button
+                key={item.name}
+                onClick={() => scrollToSection(item.href)}
+                className={`py-2 text-sm font-medium transition-colors hover:text-primary ${
+                  activeSection === item.href ? 'text-primary' : 'text-gray-600'
+                }`}
+              >
+                {item.name}
+              </button>
+            ))}
+          </nav>
+        </motion.div>
+      )}
+    </>
   )
 }

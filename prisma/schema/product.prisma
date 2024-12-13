@@ -1,14 +1,15 @@
 model Product {
   id            String      @id @default(cuid())
   name          String
-  category      Category
+  category      Category    @relation(fields: [categoryName], references: [name])
+  categoryName String       @map("category_name")
   description   String?
   price         Float
-  bulkPrice     String?
-  minOrder      Int
-  leadTime      String?
-  supplier   Supplier     @relation(fields: [supplierId], references: [id])
-  supplierId String
+  bulkPrice     String?    @map("bulk_price")
+  minOrder      Int        @map("min_order")
+  leadTime      String?    @map("lead_time")
+  supplier   Supplier      @relation(fields: [supplierId], references: [id])
+  supplierId String        @map("supplier_id")
   orderItems  OrderItem[]
   stock         Int
   certifications String?
@@ -16,9 +17,12 @@ model Product {
   @@map("products")
 }
 
-enum Category {
-  MEAT
-  VEGETABLES
-  DAIRY
-  OTHER
+model Category {
+  id String @id @default(cuid())
+  name String @unique
+  description String
+  image String
+  products Product[]
+
+  @@map("categories")
 }

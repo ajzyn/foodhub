@@ -1,6 +1,7 @@
 import { CacheKeys } from '@/api/cache-keys'
 import { getProducts } from '@/api/products'
 import ProductList from '@/app/(domains)/supplier/products/components/product-list'
+import { getCategories } from '@/server/db/products'
 import { isValidNumber } from '@/utils/numbers'
 import { Category } from '@prisma/client'
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
@@ -11,13 +12,15 @@ interface ProductsPageProps {
     page?: string
     pageSize?: string
     search?: string
-    category: Category
+    category: string
   }
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  if (!Object.values(Category).includes(searchParams.category?.toUpperCase() as Category)) {
-    return redirect(`/products?category=${Category.MEAT}`)
+  const categories = await getCategories()
+
+  if (!categories.find((category) => category.name === searchParams.category)) {
+    return redirect(`/products?category=${categories[0].name}`)
   }
 
   if (!isValidNumber(searchParams.page) || !isValidNumber(searchParams.pageSize)) {
@@ -43,7 +46,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProductList />
+      <ProductList categories={categories} />
     </HydrationBoundary>
   )
 }

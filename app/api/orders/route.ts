@@ -1,10 +1,10 @@
-import getSession from '@/lib/get-session'
 import { getOrders, getTotalOrders } from '@/server/db/orders'
 import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
+import { auth } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
-  const session = await getSession()
+  const session = await auth()
 
   if (!session || session.user.type !== 'SUPPLIER') {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })

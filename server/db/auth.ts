@@ -26,13 +26,31 @@ export async function setUserType(userId: string, userType: UserType) {
 }
 
 export async function createUser(email: string, password: string, type: UserType) {
-  return await prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       email,
       type,
       password
     }
   })
+
+  if (type === UserType.SUPPLIER) {
+    await prisma.supplier.create({
+      data: {
+        id: user.id
+      }
+    })
+  }
+
+  if (type === UserType.RESTAURANT) {
+    await prisma.restaurant.create({
+      data: {
+        id: user.id
+      }
+    })
+  }
+
+  return user
 }
 
 export async function getUser(email: string) {

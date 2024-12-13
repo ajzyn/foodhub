@@ -3,9 +3,7 @@ import { z } from 'zod'
 
 export const productSchema = z.object({
   name: z.string().min(1, 'Nazwa produktu jest wymagana'),
-  category: z.nativeEnum(Category, {
-    errorMap: () => ({ message: 'Proszę wybrać kategorię produktu' })
-  }),
+  category: z.string(),
   description: z.string().optional(),
   price: z.number().min(1, 'Cena musi być większa niż 0'),
   bulkPrice: z.string().optional(),

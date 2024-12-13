@@ -17,17 +17,40 @@ export default async function fetchFromApi<T>(path: string, options?: RequestIni
     }
   }
 
-  const response = await fetch(`${baseUrl}${path}`, {
-    ...options,
-    headers,
-    credentials: 'include'
-  })
+  try {
+    const response = await fetch(`${baseUrl}${path}`, {
+      ...options,
+      headers,
+      credentials: 'include'
+    })
 
-  const data = await response.json()
+    const contentType = response.headers.get('content-type')
 
-  if (!response.ok || response.status >= 400) {
-    throw new Error(data.error)
+    let data
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json()
+    } else {
+      data = await response.text()
+    }
+
+    if (!response.ok) {
+      throw {
+        status: response.status,
+        message: data?.message || data || 'An error occurred',
+        details: data?.error || null
+      }
+    }
+
+    return data
+  } catch (error) {
+    if (error instanceof Error) {
+      throw {
+        status: 500,
+        message: error.message || 'Network error',
+        details: null
+      }
+    }
+
+    throw error
   }
-
-  return data
 }

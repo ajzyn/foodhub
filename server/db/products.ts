@@ -1,13 +1,12 @@
 import { Product } from '@/api/schemas/product'
 import prisma from '@/lib/prisma'
 import { PaginationDBParams } from '@/types/pagination'
-import { Category } from '@prisma/client'
+import { Category, Prisma } from '@prisma/client'
 
-export async function createProduct(product: Product, supplierId: string) {
+export const createProduct = async (product: Product, supplierId: string) => {
   return await prisma.product.create({
     data: {
       name: product.name,
-      category: product.category,
       description: product.description,
       price: product.price,
       bulkPrice: product.bulkPrice,
@@ -15,6 +14,9 @@ export async function createProduct(product: Product, supplierId: string) {
       leadTime: product.leadTime,
       certifications: product.certifications,
       stock: product.stock,
+      category: {
+        connect: { name: product.category }
+      },
       supplier: {
         connect: { id: supplierId }
       }
@@ -28,20 +30,52 @@ export async function getProductById(id: string) {
   })
 }
 
-export async function getProducts(category: Category, paginationParams: PaginationDBParams) {
+export async function getProducts(paginationParams: PaginationDBParams, category?: string | null) {
   return await prisma.product.findMany({
     skip: (paginationParams.page - 1) * paginationParams.pageSize,
     take: paginationParams.pageSize,
     where: {
-      category,
-      name: { contains: paginationParams.search, mode: 'insensitive' }
+      ...(category
+        ? {
+            categoryName: {
+              contains: category,
+              mode: 'insensitive'
+            }
+          }
+        : {}),
+      name: {
+        contains: paginationParams.search,
+        mode: 'insensitive'
+      }
     },
     orderBy: { name: 'desc' }
   })
 }
 
-export async function getTotalProducts(category: Category, paginationParams: PaginationDBParams) {
+export async function getTotalProducts(paginationParams: PaginationDBParams, category?: string | null) {
   return await prisma.product.count({
-    where: { category, name: { contains: paginationParams.search, mode: 'insensitive' } }
+    where: {
+      ...(category
+        ? {
+            category: {
+              name: {
+                contains: category,
+                mode: 'insensitive'
+              }
+            }
+          }
+        : {}),
+      name: { contains: paginationParams.search, mode: 'insensitive' }
+    }
+  })
+}
+
+export async function getCategories() {
+  return await prisma.category.findMany()
+}
+
+export async function getProductsByCategory(category: string) {
+  return await prisma.product.findMany({
+    where: { category: { name: category } }
   })
 }

@@ -42,7 +42,7 @@ const columns = [
   }
 ]
 
-export default function ProductList() {
+export default function ProductList({ categories }: { categories: Category[] }) {
   const {
     tableParams: { page, pageSize, search },
     additionalFilters: { category },
@@ -50,9 +50,9 @@ export default function ProductList() {
     setPage,
     setPageSize,
     setFilter
-  } = useTableFilters<{ category: Category }>({
+  } = useTableFilters<{ category: string }>({
     initialFilters: {
-      category: Category.MEAT
+      category: categories[0].name
     }
   })
 
@@ -83,6 +83,8 @@ export default function ProductList() {
     setSearch(event.target.value)
   }
 
+  console.log(data)
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Produkty</h1>
@@ -112,11 +114,11 @@ export default function ProductList() {
       </div>
 
       <div className="my-8">
-        <Tabs className="sm:hidden" value={category as string} onValueChange={handleCategoryChange}>
+        <Tabs className="sm:hidden" value={category} onValueChange={handleCategoryChange}>
           <TabsList className="grid w-full grid-cols-4">
-            {Object.values(Category).map((category) => (
-              <TabsTrigger key={category} value={category}>
-                {category}
+            {categories.map((category) => (
+              <TabsTrigger key={category.id} value={category.name}>
+                {category.name}
               </TabsTrigger>
             ))}
           </TabsList>
@@ -124,14 +126,14 @@ export default function ProductList() {
 
         <div className="hidden sm:block">
           <p className="text-sm text-muted-foreground mb-2">Kategoria</p>
-          <Select value={category as string} onValueChange={handleCategoryChange}>
+          <Select value={category} onValueChange={handleCategoryChange}>
             <SelectTrigger className="bg-white w-full">
               <SelectValue placeholder="Wybierz kategorię" />
             </SelectTrigger>
             <SelectContent>
-              {Object.values(Category).map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
+              {categories.map((category) => (
+                <SelectItem key={category.id} value={category.name}>
+                  {category.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -139,7 +141,7 @@ export default function ProductList() {
         </div>
       </div>
 
-      <TableWithPagination
+      {/* <TableWithPagination
         columns={columns}
         data={data?.data ?? []}
         pagination={{
@@ -149,7 +151,7 @@ export default function ProductList() {
           onPageChange: handlePageChange,
           onPageSizeChange: handlePageSizeChange
         }}
-      />
+      /> */}
     </div>
   )
 }
