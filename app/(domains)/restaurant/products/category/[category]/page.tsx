@@ -1,6 +1,7 @@
 import { getProductsByCategory } from '@/server/db/products'
 
 export default async function CategoryPage({ params }: { params: { categoryName: string } }) {
+  console.log('params', params)
   const { categoryName } = params
 
   const products = await getProductsByCategory(categoryName)
@@ -8,7 +9,7 @@ export default async function CategoryPage({ params }: { params: { categoryName:
   return (
     <div>
       {products.map((product) => (
-        <div>{product.name}</div>
+        <div key={product.id}>{product.name}</div>
       ))}
     </div>
   )

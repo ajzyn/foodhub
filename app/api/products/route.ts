@@ -37,14 +37,11 @@ export async function GET(request: NextRequest) {
   const search = searchParams.get('search') || ''
 
   try {
-    console.log('przed')
     const products = await getProducts({ page, pageSize, search }, category)
-    console.log('po')
-    console.log(products)
 
-    // const totalProducts = await getTotalProducts({ page, pageSize, search }, category)
+    const totalProducts = await getTotalProducts({ page, pageSize, search }, category)
 
-    // const totalPages = Math.ceil(totalProducts / pageSize)
+    const totalPages = Math.ceil(totalProducts / pageSize)
 
     return NextResponse.json(
       {

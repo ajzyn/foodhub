@@ -57,11 +57,9 @@ export async function getTotalProducts(paginationParams: PaginationDBParams, cat
     where: {
       ...(category
         ? {
-            category: {
-              name: {
-                contains: category,
-                mode: 'insensitive'
-              }
+            categoryName: {
+              contains: category,
+              mode: 'insensitive'
             }
           }
         : {}),

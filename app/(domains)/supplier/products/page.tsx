@@ -5,7 +5,10 @@ import { getCategories } from '@/server/db/products'
 import { isValidNumber } from '@/utils/numbers'
 import { Category } from '@prisma/client'
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
-import { redirect } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
+import { Suspense } from 'react'
+import { ProductListSkeleton } from './components/product-list-seleton'
+import { queryClientConfig } from '@/lib/query-client-config'
 
 interface ProductsPageProps {
   searchParams: {
@@ -17,36 +20,58 @@ interface ProductsPageProps {
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  const categories = await getCategories()
+  let categories: Category[] = []
 
-  if (!categories.find((category) => category.name === searchParams.category)) {
-    return redirect(`/products?category=${categories[0].name}`)
+  try {
+    categories = await getCategories()
+  } catch (error) {
+    console.error('Error getting categories:', error)
+    return notFound()
   }
 
-  if (!isValidNumber(searchParams.page) || !isValidNumber(searchParams.pageSize)) {
-    return redirect(`/products?category=${searchParams.category}&page=1&pageSize=10`)
-  }
+  const page = isValidNumber(searchParams.page) ? Number(searchParams.page) : 1
+  const pageSize = isValidNumber(searchParams.pageSize) ? Number(searchParams.pageSize) : 10
+
+  const category =
+    searchParams.category && categories.some((cat) => cat.name === searchParams.category)
+      ? searchParams.category
+      : categories[0].name ?? ''
 
   const search = searchParams.search ?? ''
 
-  const queryClient = new QueryClient()
-  await queryClient.prefetchQuery({
-    queryKey: [
-      CacheKeys.PRODUCTS,
-      { page: searchParams.page, pageSize: searchParams.pageSize, search, category: searchParams.category }
-    ],
-    queryFn: () =>
-      getProducts({
-        page: Number(searchParams.page),
-        pageSize: Number(searchParams.pageSize),
-        search,
-        category: searchParams.category
-      })
-  })
+  if (
+    (category && searchParams.category !== category) ||
+    !isValidNumber(searchParams.page) ||
+    !isValidNumber(searchParams.pageSize) ||
+    searchParams.search !== search
+  ) {
+    return redirect(`/products?page=${page}&pageSize=${pageSize}&category=${category}&search=${search}`)
+  }
+
+  const queryClient = new QueryClient(queryClientConfig)
+
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: [CacheKeys.PRODUCTS, { page, pageSize, search, category }],
+      queryFn: () =>
+        getProducts({
+          page,
+          pageSize,
+          search,
+          category
+        })
+    }),
+    queryClient.prefetchQuery({
+      queryKey: [CacheKeys.CATEGORIES],
+      queryFn: () => getCategories()
+    })
+  ])
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProductList categories={categories} />
+      <Suspense fallback={<ProductListSkeleton />}>
+        <ProductList initialCategory={category} />
+      </Suspense>
     </HydrationBoundary>
   )
 }

@@ -7,12 +7,14 @@ import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
-import { getProducts } from '@/api/products'
-import { Category, Product } from '@prisma/client'
+import { getCategories, getProducts } from '@/api/products'
+import { Product } from '@prisma/client'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select'
-import TableWithPagination from '@/components/table-with-pagination'
 import { useTableFilters } from '@/hooks/use-table-filters'
+import { redirect } from 'next/navigation'
+import TableWithPagination from '@/components/table-with-pagination'
+import { CacheKeys } from '@/api/cache-keys'
 
 const columns = [
   {
@@ -31,9 +33,11 @@ const columns = [
     header: '',
     cell: (product: Product) => (
       <div className="flex space-x-2">
-        <Button variant="ghost" size="icon" className="hover:text-info">
-          <Edit className="h-4 w-4" />
-        </Button>
+        <Link href={`/products/edit/${product.id}`}>
+          <Button variant="ghost" size="icon" className="hover:text-info">
+            <Edit className="h-4 w-4" />
+          </Button>
+        </Link>
         <Button variant="ghost" size="icon" className="hover:text-destructive">
           <Trash2 className="h-4 w-4" />
         </Button>
@@ -42,7 +46,7 @@ const columns = [
   }
 ]
 
-export default function ProductList({ categories }: { categories: Category[] }) {
+export default function ProductList({ initialCategory }: { initialCategory: string }) {
   const {
     tableParams: { page, pageSize, search },
     additionalFilters: { category },
@@ -52,11 +56,16 @@ export default function ProductList({ categories }: { categories: Category[] }) 
     setFilter
   } = useTableFilters<{ category: string }>({
     initialFilters: {
-      category: categories[0].name
+      category: initialCategory
     }
   })
 
-  const { data, isFetching } = useQuery({
+  const { data: categories, isFetching: isFetchingCategories } = useQuery({
+    queryKey: [CacheKeys.CATEGORIES],
+    queryFn: () => getCategories()
+  })
+
+  const { data: products, isFetching: isFetchingProducts } = useQuery({
     queryKey: ['products', { page, pageSize }, search, category],
     queryFn: () =>
       getProducts({
@@ -66,6 +75,10 @@ export default function ProductList({ categories }: { categories: Category[] }) 
         category
       })
   })
+
+  if (categories?.length && !categories.find((category) => category.name === category.name)) {
+    return redirect(`/products?category=${categories[0].name}`)
+  }
 
   const handleCategoryChange = (category: string) => {
     setFilter('category', category)
@@ -82,8 +95,6 @@ export default function ProductList({ categories }: { categories: Category[] }) 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value)
   }
-
-  console.log(data)
 
   return (
     <div>
@@ -116,8 +127,8 @@ export default function ProductList({ categories }: { categories: Category[] }) 
       <div className="my-8">
         <Tabs className="sm:hidden" value={category} onValueChange={handleCategoryChange}>
           <TabsList className="grid w-full grid-cols-4">
-            {categories.map((category) => (
-              <TabsTrigger key={category.id} value={category.name}>
+            {categories?.map((category) => (
+              <TabsTrigger key={category.name} value={category.name}>
                 {category.name}
               </TabsTrigger>
             ))}
@@ -131,8 +142,8 @@ export default function ProductList({ categories }: { categories: Category[] }) 
               <SelectValue placeholder="Wybierz kategorię" />
             </SelectTrigger>
             <SelectContent>
-              {categories.map((category) => (
-                <SelectItem key={category.id} value={category.name}>
+              {categories?.map((category) => (
+                <SelectItem key={category.name} value={category.name}>
                   {category.name}
                 </SelectItem>
               ))}
@@ -141,17 +152,17 @@ export default function ProductList({ categories }: { categories: Category[] }) 
         </div>
       </div>
 
-      {/* <TableWithPagination
+      <TableWithPagination
         columns={columns}
-        data={data?.data ?? []}
+        data={products?.data ?? []}
         pagination={{
           page,
           pageSize,
-          totalPages: data?.pagination.totalPages ?? 1,
+          totalPages: products?.pagination.totalPages ?? 1,
           onPageChange: handlePageChange,
           onPageSizeChange: handlePageSizeChange
         }}
-      /> */}
+      />
     </div>
   )
 }
