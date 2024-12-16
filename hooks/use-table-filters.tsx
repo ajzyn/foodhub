@@ -2,10 +2,19 @@ import { useState, useEffect } from 'react'
 import { debounce } from 'lodash'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
+type Validator<T> = (value: T | null | undefined, initialValue?: T) => T | null
+
+interface FilterConfig<T> {
+  initialValue?: T
+  validator?: Validator<T>
+}
+
 interface UseTableFiltersProps<T> {
   delayMs?: number
   updateUrl?: boolean
-  initialFilters?: T
+  filters?: Partial<{
+    [K in keyof T]: FilterConfig<T[K]>
+  }>
 }
 
 interface TableParams {
@@ -14,24 +23,58 @@ interface TableParams {
   search: string
 }
 
-export const useTableFilters = <T extends {}>({
+export const useTableFilters = <T extends { page?: number; pageSize?: number }>({
   delayMs = 1000,
   updateUrl = true,
-  initialFilters = {} as T
+  filters = {} as { [K in keyof T]: FilterConfig<T[K]> }
 }: UseTableFiltersProps<T> = {}) => {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
+  const defaultValidators: { [key: string]: Validator<any> } = {
+    page: (value) => {
+      const parsedPage = parseInt(String(value), 10)
+      return isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage
+    },
+    pageSize: (value) => {
+      const parsedPageSize = parseInt(String(value), 10)
+      return isNaN(parsedPageSize) || parsedPageSize < 1 ? 10 : parsedPageSize
+    }
+  }
+
+  const validateFilters = () => {
+    const validatedFilters: Partial<T> = {}
+
+    const page = defaultValidators.page(searchParams.get('page'), filters.page?.initialValue ?? 1)
+    const pageSize = defaultValidators.pageSize(searchParams.get('pageSize'), filters.pageSize?.initialValue ?? 10)
+
+    Object.keys(filters).forEach((key) => {
+      if (key !== 'page' && key !== 'pageSize') {
+        const filterConfig = filters[key as keyof T]
+        const validator = filterConfig?.validator || ((value) => value)
+        const urlValue = searchParams.get(key)
+
+        validatedFilters[key as keyof T] = validator(urlValue as T[keyof T], filterConfig?.initialValue) as T[keyof T]
+      }
+    })
+
+    return {
+      page,
+      pageSize,
+      filters: validatedFilters
+    }
+  }
+
+  const { page, pageSize, filters: validatedFilters } = validateFilters()
+
   const [tableParams, setTableParams] = useState<TableParams>({
-    page: parseInt(searchParams.get('page') || '1', 10),
-    pageSize: parseInt(searchParams.get('pageSize') || '10', 10),
+    page,
+    pageSize,
     search: searchParams.get('search') || ''
   })
 
-  const [additionalFilters, setAdditionalFilters] = useState<T>(
-    Object.fromEntries(Object.entries(initialFilters).map(([key, value]) => [key, searchParams.get(key) || value])) as T
-  )
+  const [additionalFilters, setAdditionalFilters] = useState<T>(validatedFilters as T)
 
   const updateUrlParams = (params: Record<string, string | number | undefined>) => {
     if (!updateUrl) return
@@ -65,7 +108,7 @@ export const useTableFilters = <T extends {}>({
     return () => {
       debouncedUpdateParams.cancel()
     }
-  }, [tableParams, additionalFilters])
+  }, [tableParams, additionalFilters, debouncedUpdateParams])
 
   const setSearch = (search: string) => {
     setTableParams((prev) => ({
@@ -90,11 +133,13 @@ export const useTableFilters = <T extends {}>({
   const setFilter = (key: keyof T, value: string | number | null) => {
     setAdditionalFilters((prev) => {
       const newFilters = { ...prev }
+      const filterConfig = filters[key]
 
       if (value === null) {
         delete newFilters[key]
       } else {
-        newFilters[key] = value as T[keyof T]
+        const validator = filterConfig?.validator || ((v) => v)
+        newFilters[key as keyof T] = validator(value as T[keyof T], filterConfig?.initialValue) as T[keyof T]
       }
 
       return newFilters

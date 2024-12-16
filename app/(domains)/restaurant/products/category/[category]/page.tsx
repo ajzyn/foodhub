@@ -1,16 +1,28 @@
 import { getProductsByCategory } from '@/server/db/products'
+import CategoryNav from './components/category-nav'
+import { QueryClient } from '@tanstack/react-query'
+import { queryClientConfig } from '@/lib/query-client-config'
+import { CacheKeys } from '@/api/cache-keys'
 
-export default async function CategoryPage({ params }: { params: { categoryName: string } }) {
-  console.log('params', params)
-  const { categoryName } = params
+export default async function CategoryPage({ params }: { params: { category: string } }) {
+  const { category } = params
 
-  const products = await getProductsByCategory(categoryName)
-  console.log(products, categoryName)
+  console.log('category', category)
+
+  const queryClient = new QueryClient(queryClientConfig)
+
+  await queryClient.fetchQuery({
+    queryKey: [CacheKeys.PRODUCTS_BY_CATEGORY, category],
+    queryFn: () => getProductsByCategory(category)
+  })
+
+  console.log(category, 'przed')
   return (
     <div>
-      {products.map((product) => (
+      <CategoryNav categoryName={category} />
+      {/* {products.map((product) => (
         <div key={product.id}>{product.name}</div>
-      ))}
+      ))} */}
     </div>
   )
 }

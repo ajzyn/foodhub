@@ -1,20 +1,16 @@
-export default async function fetchFromApi<T>(path: string, options?: RequestInit): Promise<T> {
+import { getRequestHeaders } from './get-request-cookies'
+
+export default async function fetchFromApi<T>(path: string, options: RequestInit = {}): Promise<T> {
   const baseUrl = typeof window === 'undefined' ? process.env.NEXTAUTH_URL + '/api' : '/api'
 
   const headers = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
-    ...(options?.headers as Record<string, string>)
+    ...(options.headers as Record<string, string>)
   } as Record<string, string>
 
-  if (typeof window === 'undefined') {
-    const { headers: nextHeaders } = await import('next/headers')
-    const headersList = nextHeaders()
-    const cookie = headersList.get('cookie')
-
-    if (cookie) {
-      headers.cookie = cookie || ''
-    }
+  if (typeof window === 'undefined' && !options.next) {
+    headers.cookie = await getRequestHeaders()
   }
 
   try {

@@ -7,14 +7,14 @@ import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
-import { getCategories, getProducts } from '@/api/products'
+import { getProducts } from '@/api/products'
 import { Product } from '@prisma/client'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useTableFilters } from '@/hooks/use-table-filters'
-import { redirect } from 'next/navigation'
 import TableWithPagination from '@/components/table-with-pagination'
 import { CacheKeys } from '@/api/cache-keys'
+import { getCategories } from '@/api/categories'
 
 const columns = [
   {
@@ -47,6 +47,11 @@ const columns = [
 ]
 
 export default function ProductList({ initialCategory }: { initialCategory: string }) {
+  const { data: categories } = useQuery({
+    queryKey: [CacheKeys.CATEGORIES],
+    queryFn: () => getCategories()
+  })
+
   const {
     tableParams: { page, pageSize, search },
     additionalFilters: { category },
@@ -54,31 +59,30 @@ export default function ProductList({ initialCategory }: { initialCategory: stri
     setPage,
     setPageSize,
     setFilter
-  } = useTableFilters<{ category: string }>({
-    initialFilters: {
-      category: initialCategory
+  } = useTableFilters<{
+    category: string
+    page: number
+    pageSize: number
+    search: string
+  }>({
+    filters: {
+      category: {
+        initialValue: initialCategory,
+        validator: (value) => {
+          const availableCategories = categories?.data?.map((cat) => cat.name) || []
+          return availableCategories.includes(value as string) ? (value as string) : initialCategory
+        }
+      }
     }
   })
 
-  const { data: categories, isFetching: isFetchingCategories } = useQuery({
-    queryKey: [CacheKeys.CATEGORIES],
-    queryFn: () => getCategories()
-  })
-
   const { data: products, isFetching: isFetchingProducts } = useQuery({
-    queryKey: ['products', { page, pageSize }, search, category],
+    queryKey: [CacheKeys.PRODUCTS, { page, pageSize, search, category }],
     queryFn: () =>
       getProducts({
-        page,
-        pageSize,
-        search,
-        category
+        paginationParams: { page, pageSize, search, category }
       })
   })
-
-  if (categories?.length && !categories.find((category) => category.name === category.name)) {
-    return redirect(`/products?category=${categories[0].name}`)
-  }
 
   const handleCategoryChange = (category: string) => {
     setFilter('category', category)
@@ -127,7 +131,7 @@ export default function ProductList({ initialCategory }: { initialCategory: stri
       <div className="my-8">
         <Tabs className="sm:hidden" value={category} onValueChange={handleCategoryChange}>
           <TabsList className="grid w-full grid-cols-4">
-            {categories?.map((category) => (
+            {categories?.data?.map((category) => (
               <TabsTrigger key={category.name} value={category.name}>
                 {category.name}
               </TabsTrigger>
@@ -142,7 +146,7 @@ export default function ProductList({ initialCategory }: { initialCategory: stri
               <SelectValue placeholder="Wybierz kategorię" />
             </SelectTrigger>
             <SelectContent>
-              {categories?.map((category) => (
+              {categories?.data?.map((category) => (
                 <SelectItem key={category.name} value={category.name}>
                   {category.name}
                 </SelectItem>
@@ -158,7 +162,7 @@ export default function ProductList({ initialCategory }: { initialCategory: stri
         pagination={{
           page,
           pageSize,
-          totalPages: products?.pagination.totalPages ?? 1,
+          totalPages: products?.pagination?.totalPages ?? 1,
           onPageChange: handlePageChange,
           onPageSizeChange: handlePageSizeChange
         }}

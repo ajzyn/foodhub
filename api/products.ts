@@ -15,7 +15,13 @@ export async function getProductById(id: string) {
   return await fetchFromApi<Product>(`/products/${id}`)
 }
 
-export async function getProducts(paginationParams: PaginationRequestParams) {
+export async function getProducts({
+  paginationParams,
+  fetchOptions
+}: {
+  paginationParams: PaginationRequestParams
+  fetchOptions?: RequestInit
+}) {
   const queryString = new URLSearchParams({
     page: paginationParams.page?.toString() ?? '1',
     pageSize: paginationParams.pageSize?.toString() ?? '10',
@@ -25,9 +31,5 @@ export async function getProducts(paginationParams: PaginationRequestParams) {
 
   const urlWithParams = `/products?${queryString}`
 
-  return await fetchFromApi<PaginatedResponse<PrismaProduct>>(urlWithParams)
-}
-
-export async function getCategories() {
-  return await fetchFromApi<Category[]>('/api/products/categories')
+  return await fetchFromApi<PaginatedResponse<PrismaProduct>>(urlWithParams, fetchOptions)
 }

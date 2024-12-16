@@ -1,3 +1,5 @@
+import { ResponseParams } from './response'
+
 export interface PaginationRequestParams {
   page?: number
   pageSize?: number
@@ -11,9 +13,9 @@ export interface PaginationDBParams {
   search: string
 }
 
-export interface PaginatedResponse<T> {
-  data: T[]
-  pagination: {
+export interface PaginatedResponse<T> extends Omit<ResponseParams<T>, 'data'> {
+  data?: T[]
+  pagination?: {
     currentPage: number
     pageSize: number
     totalPages: number
